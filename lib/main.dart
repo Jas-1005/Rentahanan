@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rentahanan/auth/auth.dart';
+// import 'package:rentahanan/firebase_options.dart';
 import 'package:rentahanan/manager/manager.dart';
 import 'package:rentahanan/tenant/tenant.dart';
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/manager-signup': (context) => const ManagerSignupPage(),
         '/tenant-login': (context) => const TenantLoginPage(),
         '/tenant-signup': (context) => const TenantSignupPage(),
+        '/tenant-unconfirmed': (context) => const TenantUnconfirmedPage(),
         '/manager-dashboard': (context) => const ManagerDashboardPage(),
         '/manager-profile': (context) => const ManagerProfilePage(),
         '/tenant-dashboard': (context) => const TenantDashboardPage(),

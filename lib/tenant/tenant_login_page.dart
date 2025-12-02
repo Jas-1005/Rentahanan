@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 
 class TenantLoginPage extends StatefulWidget {
@@ -12,41 +10,60 @@ class TenantLoginPage extends StatefulWidget {
 }
 
 class _TenantLoginPageState extends State<TenantLoginPage> {
-  // Controllers to get text from input fields
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
+  String email = '';
+  String password = '';
   String errorMessage = '';
   bool _obscureText = true;
+  bool _isLoading = false;
 
-  void handleLogin() {
-    final email = emailController.text;
-    final password = passwordController.text;
+  Future <void> handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    // Simple login logic for now
-    // Simple login logic for now
-    if (email.isEmpty || password.isEmpty) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please complete all fields.")));
-      setState(() {
-        errorMessage = 'Invalid tenant email or password';
-      });
-    } else {
-      try {
-        FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password:password).then((value){
-          Navigator.pushReplacementNamed(context, '/tenant-dashboard');
+    _formKey.currentState!.save();
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+            email: email.trim(),
+            password:password,
+      );
+
+      if(!mounted) return;
+      Navigator.pushReplacementNamed(context, '/tenant-unconfirmed');
+      } on FirebaseAuthException catch (e){
+        String displayMessage;
+        if (e.code == 'network-request-failed'){
+          displayMessage = 'Network error: Please check your internet connection.';
+        } else if (e.code == 'user-not-found'){
+          displayMessage = 'Your account does not e exist. Please create an account first.';
+        } else if (e.code == 'wrong-password'){
+          displayMessage = 'Please double check your password.';
+        } else if (e.code == 'too-many-requests'){
+          displayMessage = 'Too many failed login attempts. Please try again later.';
+        } else {
+          displayMessage = 'Login failed: ${e.message}'; // Generic message for other errors
+        }
+
+        if (!mounted) return;
+        setState(() {
+          errorMessage = displayMessage;
         });
-      } catch(err){
-        print(err);
-      }
 
+        setState(() {
+          errorMessage = displayMessage;
+        });
+
+    } catch(err) {
+      if (!mounted) return;
+      setState(() {
+        errorMessage = 'An unexpected error occurred. Please try again.';
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
     }
-    // if (username == 'user' && password == '1234') {
-    //   Navigator.pushReplacementNamed(context, '/tenant-dashboard');
-    // } else {
-    //   setState(() {
-    //     errorMessage = 'Invalid username or password';
-    //   });
-    // }
   }
 
   @override
@@ -55,39 +72,50 @@ class _TenantLoginPageState extends State<TenantLoginPage> {
       appBar: AppBar(title: const Text('Tenant Login')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+        child: Form (
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: emailController,
+            TextFormField(
               decoration: const InputDecoration(
-                labelText: 'Email',
+                labelText: 'Enter email',
                 border: OutlineInputBorder(),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Enter your email';
+                if (!value.contains('@') || !value.contains('.')) return 'Invalid email';
+                return null;
+              },
+              onSaved: (value) => email = value!,
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: passwordController,
-              obscureText: _obscureText, // hides password input
+            TextFormField(
+              obscureText: _obscureText,
               decoration: InputDecoration(
-                labelText: 'Password',
+                labelText: 'Enter password',
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText; // toggle visibility
-                    });
-                  },
+                  icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
                 ),
               ),
+              validator: (value) {
+                if (value == null || value.isEmpty) return 'Enter your password';
+                return null;
+              },
+              onSaved: (value) => password = value!,
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             ElevatedButton(
-              onPressed: handleLogin,
-              child: const Text('LOG IN'),
+              onPressed: _isLoading ? null : handleLogin,
+              child: _isLoading
+                  ? SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+              )
+                  : Text('LOG IN'),
             ),
             const SizedBox(height: 10),
             Row(
@@ -109,13 +137,14 @@ class _TenantLoginPageState extends State<TenantLoginPage> {
                 ),
               ],
             ),
+            const SizedBox(height: 12),
             Text(
               errorMessage,
-              style: const TextStyle(color: Colors.red),
-            ),
+              style: const TextStyle(color: Colors.red)),
           ],
         ),
       ),
+    ),
     );
   }
 }

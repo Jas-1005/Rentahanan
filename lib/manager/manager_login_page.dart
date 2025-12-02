@@ -1,7 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 
 class ManagerLoginPage extends StatefulWidget {
   const ManagerLoginPage({super.key});
@@ -11,34 +9,59 @@ class ManagerLoginPage extends StatefulWidget {
 }
 
 class _ManagerLoginPageState extends State<ManagerLoginPage> {
-  // Controllers to get text from input fields
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-
+  final _formKey = GlobalKey<FormState>();
+  String email = '';
+  String password = '';
   String errorMessage = '';
   bool _obscureText = true;
+  bool _isLoading = false;
 
-  void handleLogin() {
-    final email = emailController.text.trim();
-    final password = passwordController.text.trim();
+  Future <void> handleLogin() async {
+    if (!_formKey.currentState!.validate()) return;
 
+    _formKey.currentState!.save();
+    setState(() => _isLoading = true);
 
+    try {
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+        email: email.trim(),
+        password:password,
+      );
 
-    // Simple login logic for now
-    if (email.isEmpty || password.isEmpty) {
-      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please complete all fields.")));
-      setState(() {
-        errorMessage = 'Invalid manager email or password';
-      });
-    } else {
-      try {
-        FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password:password).then((value){
-          Navigator.pushReplacementNamed(context, '/manager-dashboard');
-        });
-      } catch(err){
-        print(err);
+      if(!mounted) return;
+      Navigator.pushReplacementNamed(context, '/manager-dashboard');
+    } on FirebaseAuthException catch (e){
+      String displayMessage;
+      if (e.code == 'network-request-failed'){
+        displayMessage = 'Network error: Please check your internet connection.';
+      } else if (e.code == 'user-not-found'){
+        displayMessage = 'Your account does not e exist. Please create an account first.';
+      } else if (e.code == 'wrong-password'){
+        displayMessage = 'Please double check your password.';
+      } else if (e.code == 'too-many-requests'){
+        displayMessage = 'Too many failed login attempts. Please try again later.';
+      } else {
+        displayMessage = 'Login failed: ${e.message}'; // Generic message for other errors
       }
 
+      if (!mounted) return;
+      setState(() {
+        errorMessage = displayMessage;
+      });
+
+      setState(() {
+        errorMessage = displayMessage;
+      });
+
+    } catch(err) {
+      if (!mounted) return;
+      setState(() {
+        errorMessage = 'An unexpected error occurred. Please try again.';
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
     }
   }
 
@@ -48,66 +71,77 @@ class _ManagerLoginPageState extends State<ManagerLoginPage> {
       appBar: AppBar(title: const Text('Manager Login')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            TextField(
-              controller: emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+        child: Form (
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Enter email',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter your email';
+                  if (!value.contains('@') || !value.contains('.')) return 'Invalid email';
+                  return null;
+                },
+                onSaved: (value) => email = value!,
               ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: passwordController,
-              obscureText: _obscureText, // hides password input
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
+              const SizedBox(height: 20),
+              TextFormField(
+                obscureText: _obscureText,
+                decoration: InputDecoration(
+                  labelText: 'Enter password',
+                  border: const OutlineInputBorder(),
+                  suffixIcon: IconButton(
+                    icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+                    onPressed: () => setState(() => _obscureText = !_obscureText),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText; // toggle visibility
-                    });
-                  },
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) return 'Enter your password';
+                  return null;
+                },
+                onSaved: (value) => password = value!,
               ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: handleLogin,
-              child: const Text('LOG IN'),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              spacing: 10,
-              children: [
-                const Text("Don't have an account yet?"),
-                InkWell(
-                    onTap: (){
-                      Navigator.pushReplacementNamed(context, '/manager-signup');
-                    },
-
-                    child: const Text(
-                        "Sign up here",
-                        style: TextStyle(
-                          color: Colors.blue,
-                          decoration: TextDecoration.underline,
-                        )
-                    )
-                ),
-              ],
-            ),
-            Text(
-              errorMessage,
-              style: const TextStyle(color: Colors.red),
-            ),
-          ],
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _isLoading ? null : handleLogin,
+                child: _isLoading
+                    ? SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                )
+                    : Text('LOG IN'),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 10,
+                children: [
+                  const Text("Don't have an account yet?"),
+                  InkWell(
+                      onTap: (){
+                        Navigator.pushReplacementNamed(context, '/manager-signup');
+                      },
+                      child: const Text(
+                          "Sign up here",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                          )
+                      )
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Text(
+                  errorMessage,
+                  style: const TextStyle(color: Colors.red)),
+            ],
+          ),
         ),
       ),
     );

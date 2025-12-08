@@ -18,6 +18,7 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
   String fullName = '';
   String email = '';
   String password = '';
+  String confirmPassword = '';
   String boardingHouseName = '';
   String contactNumber = '';
   String errorMessage = '';

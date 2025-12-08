@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:rentahanan/auth/auth.dart';
-import 'package:rentahanan/auth/signup_page.dart';
 import 'package:rentahanan/manager/manager.dart';
 import 'package:rentahanan/tenant/tenant.dart';
 

@@ -121,12 +121,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Future <void> fetchUserRole(user) async{
-    String userRole = "";
-
-
-  }
-
   Future <void> handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -140,18 +134,19 @@ class _LoginPageState extends State<LoginPage> {
         password:password,
       );
 
-      final user = userCredential.user;
-
+      final userID = userCredential.user!.uid;
       if(!mounted) return;
 
-      if(!mounted) return;
-      await fetchUserRole(user)
-      if(await isManager(user)) {
-        Navigator.pushReplacementNamed(context, '/manager-dashboard');
-        return;
-      }
-      if(await isTenant(user)) {
-        Navigator.pushReplacementNamed(context, '/tenant-dashboard');
+
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userID)
+          .get();
+
+      if (userDoc.exists){
+        var userData = userDoc.data() as Map<String, dynamic>;
+        String userRole = userData['role'];
+        Navigator.pushReplacementNamed(context, '/$userRole-dashboard');
         return;
       }
 

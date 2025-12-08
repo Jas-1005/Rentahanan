@@ -110,7 +110,7 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
       });
 
       if(!mounted) return;
-      Navigator.pushReplacementNamed(context, '/tenant-unconfirmed');
+      Navigator.pushReplacementNamed(context, '/tenant-dashboard');
 
     } on FirebaseAuthException catch (e){
       String displayMessage;

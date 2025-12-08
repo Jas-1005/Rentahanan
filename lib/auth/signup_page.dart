@@ -8,6 +8,7 @@ class SignupPage extends StatefulWidget {
 
   @override
   State<SignupPage> createState() => _SignupPageState();
+
 }
 
 class _SignupPageState extends State<SignupPage> {
@@ -15,6 +16,7 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        backgroundColor: const Color(0xFFFBF7F0),
         body: DefaultTabController(
           length: 2,
           child: Scaffold(

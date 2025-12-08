@@ -17,6 +17,116 @@ class _LoginPageState extends State<LoginPage> {
   bool _obscureText = true;
   bool _isLoading = false;
 
+  Widget buildRoundedField(String label, Function(String?) onSaved,
+      {TextInputType keyboardType = TextInputType.text}) {
+    return TextFormField(
+      decoration: InputDecoration(
+        hintText: label,
+        hintStyle: TextStyle(
+            fontFamily: 'Urbanist',
+            fontWeight: FontWeight.w600,
+            color: Colors.black.withOpacity(0.3)
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding:
+        const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFDDDDDD),
+            width: 1.4,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFF8B5E3C),
+            width: 1.8,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFB63B2E),
+            width: 1.8,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFB63B2E),
+            width: 1.8,
+          ),
+        ),
+      ),
+      keyboardType: keyboardType,
+      onSaved: onSaved,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please enter $label";
+        }
+        return null;
+      },
+    );
+  }
+
+  Widget buildPasswordField() {
+    return TextFormField(
+      obscureText: _obscureText,
+      decoration: InputDecoration(
+        hintText: "Password",
+        hintStyle: TextStyle(
+            fontFamily: 'Urbanist',
+            fontWeight: FontWeight.w600,
+            color: Colors.black.withOpacity(0.3)
+        ),
+        filled: true,
+        fillColor: Colors.white,
+        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFDDDDDD),
+            width: 1.4,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFF8B5E3C),
+            width: 1.8,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFB63B2E),
+            width: 1.8,
+          ),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(40),
+          borderSide: const BorderSide(
+            color: Color(0xFFB63B2E),
+            width: 1.8,
+          ),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
+          onPressed: () => setState(() => _obscureText = !_obscureText),
+        ),
+      ),
+      onSaved: (v) => password = v!,
+    );
+  }
+
+  Future <void> fetchUserRole(user) async{
+    String userRole = "";
+
+
+  }
+
   Future <void> handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -35,6 +145,7 @@ class _LoginPageState extends State<LoginPage> {
       if(!mounted) return;
 
       if(!mounted) return;
+      await fetchUserRole(user)
       if(await isManager(user)) {
         Navigator.pushReplacementNamed(context, '/manager-dashboard');
         return;
@@ -78,37 +189,19 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future <bool> isTenant(user) async{
-    final userIsTenantQuery = await FirebaseFirestore.instance
-        .collection('users')
-        .where(FieldPath.documentId, isEqualTo: user.uid)
-        .where('role', isEqualTo: 'tenant')
-        .get();
-    return userIsTenantQuery.docs.isNotEmpty;
-  }
-
-  Future <bool> isManager(user) async{
-    final userIsManagerQuery = await FirebaseFirestore.instance
-        .collection('users')
-        .where(FieldPath.documentId, isEqualTo: user.uid)
-        .where('role', isEqualTo: 'manager')
-        .get();
-    return userIsManagerQuery.docs.isNotEmpty;
-  }
-
-
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFBF7F0),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Form (
-          key: _formKey,
+      backgroundColor: const Color(0xFFFBF7F0), // match your design background
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 30),
+              // title + logo here
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +219,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                       Text(
-                        "Let's get you settled in.",
+                        "Welcome back.",
                         style: TextStyle(
                           fontSize: 10,
                           fontFamily: 'Urbanist',
@@ -179,94 +272,96 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
               const SizedBox(height: 20),
-              Container(
-                height: 55,
-                decoration: BoxDecoration(
-                  color: Color(0xFFFFFFFF),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.10),
-                      blurRadius: 12,
-                      offset: const Offset(0, 6),
-                    )
+              // FORM
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    buildRoundedField("Email Address", (v) => email = v!),
+                    const SizedBox(height: 16),
+                    buildPasswordField(),
+                    const SizedBox(height: 28),
+                    // add button here
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.brown.withOpacity(0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: SizedBox(
+                        width: double.infinity,
+                        height: 55,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : handleLogin,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF8B5E3C),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            elevation: 0, // Turn off native elevated button shadow
+                          ),
+                          child: _isLoading
+                              ? const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          )
+                              : const Text(
+                            "LOG IN",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontFamily: 'Urbanist',
+                              color: Color(0xFFFFFFFF),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      spacing: 10,
+                      children: [
+                        const Text(
+                            "Don't have an account yet?",
+                          style: TextStyle(
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 12,
+                            color: Color(0xFF4E2F1A),
+                          ),
+                        ),
+                        InkWell(
+                            onTap: (){
+                              Navigator.pushReplacementNamed(context, '/manager-signup');
+                            },
+                            child: const Text(
+                                "Sign up here",
+                                style: TextStyle(
+                                  fontFamily: 'Urbanist',
+                                  fontSize: 12,
+                                  color: Colors.blue,
+                                  //decoration: TextDecoration.underline,
+                                )
+                            )
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ],
                 ),
-                child: TextFormField(
-                  obscureText: _obscureText,
-                  decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                    hintText: 'Enter password',
-                    hintStyle: TextStyle(
-                      fontFamily: 'Urbanist',
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black.withOpacity(0.3)
-                    ),
-                    border: InputBorder.none,
-                    suffixIcon: IconButton(
-                      icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscureText = !_obscureText),
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return 'Enter your password';
-                    return null;
-                  },
-                  onSaved: (value) => password = value!,
-                ),
               ),
-
-              const SizedBox(height: 20),
-              // LOG-IN BUTTON
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : handleLogin,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF9B6A44),
-                    foregroundColor: Color(0xFFFFFFFF),
-                    textStyle: TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Urbanist',
-                        fontWeight: FontWeight.w600),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    elevation: 5, //shadow elevation
-                  ),
-                  child: _isLoading
-                      ? SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                      : Text('LOG-IN'),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                spacing: 10,
-                children: [
-                  const Text("Don't have an account yet?"),
-                  InkWell(
-                      onTap: (){
-                        Navigator.pushReplacementNamed(context, '/signup');
-                      },
-                      child: const Text(
-                          "Sign up here",
-                          style: TextStyle(
-                            color: Colors.blue,
-                            decoration: TextDecoration.underline,
-                          )
-                      )
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text(
-                  errorMessage,
-                  style: const TextStyle(color: Colors.red)),
             ],
           ),
         ),

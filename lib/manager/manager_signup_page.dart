@@ -155,15 +155,6 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
     return shareCode;
   }
 
-  Future <bool> phoneNumberExists(String phoneNumber) async {
-    final phoneNumberQuery = await FirebaseFirestore.instance
-        .collection('users')
-        .where('contactNumber', isEqualTo: phoneNumber)
-        .get();
-
-    return phoneNumberQuery.docs.isNotEmpty;
-  }
-
   Future <void> handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -171,12 +162,6 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
     setState(() => _isLoading = true);
 
     try {
-      if(await phoneNumberExists(contactNumber)){
-        setState(() {
-          errorMessage = "Phone number already in use.";
-        });
-        return;
-      }
 
       if(password != confirmPassword){
         setState(() {

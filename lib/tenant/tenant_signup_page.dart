@@ -54,15 +54,6 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
     }
   }
 
-  Future <bool> phoneNumberExists(String phoneNumber) async {
-    final phoneNumberQuery = await FirebaseFirestore.instance
-        .collection('users')
-        .where('contactNumber', isEqualTo: phoneNumber)
-        .get();
-
-    return phoneNumberQuery.docs.isNotEmpty;
-  }
-
   Future <void> handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -73,13 +64,6 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
       if(!(await _verifyBHCodeAndFetchBHCode(boardingHouseCode))){
         setState(() {
           errorMessage = "Invalid boarding house code.";
-        });
-        return;
-      }
-
-      if(await phoneNumberExists(contactNumber)){
-        setState(() {
-          errorMessage = "Phone number already in use.";
         });
         return;
       }

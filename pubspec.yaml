@@ -65,8 +65,18 @@ flutter:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
   assets:
-      - assets/images/cute_cat_placeholder.jpg
-      - assets/images/LOGO.png
+    - assets/images/cute_cat_placeholder.jpg
+    - assets/images/LOGO.png
+    - assets/images/approvePayments.png
+    - assets/images/manageTenants.png
+    - assets/images/inputDues.png
+    - assets/images/aboutPage.png
+    - assets/images/reportsPage.png
+    - assets/images/home.png
+    - assets/images/profile.png
+    - assets/images/payments.png
+    - assets/images/message.png
+
   fonts:
     - family: Perandory
       fonts:
@@ -78,12 +88,12 @@ flutter:
           weight: 500
     - family: Inter
       fonts:
-         - asset: assets/fonts/Inter-Regular.ttf
-           weight: 400
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
     - family: Amoresa
       fonts:
-         - asset: assets/fonts/Amoresa-Regular.otf
-           weight: 400
+        - asset: assets/fonts/Amoresa-Regular.otf
+          weight: 400
     - family: Urbanist
       fonts:
         - asset: assets/fonts/Urbanist-Regular.ttf

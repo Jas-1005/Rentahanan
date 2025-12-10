@@ -17,44 +17,41 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
 
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Manage Tenants")),
-      body: Column(
+      //appBar: AppBar(title: const Text("Manage Tenants")),
+      backgroundColor: const Color(0xFFF3F1EC),
+      body: SafeArea(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child:  SizedBox(
-                  height: 52,
-                  child: TextField(
-                    textInputAction: TextInputAction.search,
-                    keyboardType: TextInputType.text,
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: "Search tenant",
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: EdgeInsets.symmetric(horizontal: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
+          // HEADER
+          Padding(padding: const EdgeInsetsGeometry.symmetric(horizontal: 20, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+                  color: const Color(0xFF3B2418),
+                ),
+                const Text(
+                  "Tenants",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Urbanist',
+                    color: Color(0xFF3B2418),
                   ),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text("Filter"),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text("Sort By"),
-              )
-            ],
+              ],
+            ),
           ),
+          const SizedBox(height: 10),
+            _buildSearchBar(),
+          const SizedBox(height: 10),
           Expanded(
               child: Stack(
                 children: [
@@ -86,7 +83,6 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                                     )
                                   ],
                                 )
-
                               ],
                             ),
                           )
@@ -117,7 +113,102 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
               )
           )
         ],
-      )
+      ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: 48,
+              padding: const EdgeInsets.symmetric(horizontal: 14),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    blurRadius: 15,
+                    spreadRadius: 1,
+                    color: Colors.black.withOpacity(0.08),
+                  )
+                ],
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey),
+                  SizedBox(width: 6),
+                  Expanded(
+                    child: Text(
+                      "Search tenant...",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                        fontFamily: 'Urbanist',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Sort Button
+          Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                  color: Colors.black.withOpacity(0.08),
+                )
+              ],
+            ),
+            child: const Row(
+              children: [
+                Text("Sort By",
+                    style: TextStyle(
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.w600)),
+                Icon(Icons.arrow_drop_down)
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+
+          // Filter Button
+          Container(
+            height: 48,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Color(0xFF3A2212),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: const Row(
+              children: [
+                Icon(Icons.filter_list, color: Colors.white, size: 22),
+                SizedBox(width: 4),
+                Text("Filter",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white,
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
+

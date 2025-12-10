@@ -2,22 +2,10 @@ import 'package:flutter/material.dart';
 
 class ManagerHelper {
   static final List<Map<String, dynamic>> navItems = [
-    {'icon': Icons.home, 'label': 'Home', 'route': '/manager-dashboard'},
-    {
-      'icon': Icons.message,
-      'label': 'Inbox',
-      'route': '/manager-inbox'
-    },
-    {
-      'icon': Icons.payments,
-      'label': 'Transactions',
-      'route': '/manager-transactions'
-    },
-    {
-      'icon': Icons.account_circle,
-      'label': 'Profile',
-      'route': '/manager-profile'
-    },
+    {'image': 'assets/images/home.png', 'label': 'Home', 'route': '/manager-dashboard'},
+    {'image': 'assets/images/message.png', 'label': 'Inbox', 'route': '/manager-inbox'},
+    {'image': 'assets/images/payments.png', 'label': 'Transactions', 'route': '/manager-transactions'},
+    {'image': 'assets/images/profile.png', 'label': 'Profile', 'route': '/manager-profile'},
   ];
 
   static List<Widget> buildNavItems(BuildContext context) {
@@ -31,12 +19,13 @@ class ManagerHelper {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  item['icon'],
-                  size: 35,
-                  color: Color(0xFF222222),
+                Image.asset(
+                  item['image'],
+                  height: 30,
+                  width: 30,
+                  fit: BoxFit.contain,
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   item['label'],
                   textAlign: TextAlign.center,
@@ -44,7 +33,7 @@ class ManagerHelper {
                     fontFamily: 'Urbanist',
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF222222),
+                    color: Color(0xFF2D2D2D),
                     height: 1.1,
                   ),
                 ),

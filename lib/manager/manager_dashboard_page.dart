@@ -12,7 +12,7 @@ class ManagerDashboardPage extends StatefulWidget {
 
 class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
   static final List<Map<String, dynamic>> menuItems = [
-    {'image': 'assets/images/manageTenants.png', 'label': 'Manage\nTenants', 'route': '/manager-manage-tenants'},
+    {'image': 'assets/images/manageTenants.png', 'label': 'Tenants', 'route': '/manager-manage-tenants'},
     {'image': 'assets/images/inputDues.png', 'label': 'Input\nDues', 'route': '/manager-input-tenant-due', 'tenantID': "T1234",}, //theres a problem with imput tenant dues
     {'image': 'assets/images/approvePayments.png', 'label': 'Approve\nPayment', 'route': '/manager-tenant-requests'},
     {'image': 'assets/images/aboutPage.png', 'label': 'About', 'route': '/manager-about'}, //where is about page?
@@ -83,13 +83,26 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
       });
     }
   }
+
+  Widget _roundedIconButton(IconData icon) {
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        color: Color(0xFFFFFFFF),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Icon(icon, color: Color(0xFF3B2418), size: 22),
+    );
+  }
+
 // two cards for announcements and dashboard overview
   Widget softCard({required Widget child}) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.15),
@@ -106,7 +119,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(32),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
@@ -124,8 +137,8 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
             decoration: const BoxDecoration(
               color: Color(0xFF3A2212),
               borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(32),
-                topRight: Radius.circular(32),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
               ),
             ),
             child: Column(
@@ -149,7 +162,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: const [
-                        Text("Total Tenants",
+                        Text("TOTAL TENANTS",
                             style: TextStyle(
                                 color: Colors.white70,
                               fontFamily: 'Urbanist',
@@ -186,7 +199,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                           "+ Add Tenant",
                         style: TextStyle(
                           fontFamily: 'Urbanist',
-                          fontSize: 16,
+                          fontSize: 20,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -203,7 +216,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Pending Payments",
+                        Text("PENDING PAYMENTS",
                             style: TextStyle(
                                 color: Colors.white70,
                               fontFamily: 'Urbanist',
@@ -225,7 +238,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text("Pending Reports",
+                        Text("PENDING REPORTS",
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 16,
@@ -253,19 +266,21 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
           // bottom white section
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(32),
-                bottomRight: Radius.circular(32),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
               ),
             ),
             child: GridView.count(
               crossAxisCount: 5,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 0.85,
+              childAspectRatio: 0.75,
+              mainAxisSpacing: 2,
+              crossAxisSpacing: 2,
               children: menuItems.map((item) {
                 return InkWell(
                   onTap: () => {
@@ -294,7 +309,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFBF7F0),
+      backgroundColor: const Color(0xFFF3F1EC),
       body: SafeArea(
         child: Stack(
           children: [
@@ -303,6 +318,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Main content with bottom padding for navbar
               // HEADER
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -355,17 +371,19 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                                 fontSize: 22,
                                 fontFamily: 'Urbanist',
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF4E2F1A),
+                                color: Color(0xFF3B2418),
                               ),
                             ),
                         ),
                         Row(
                           children: [
-                            Icon(Icons.add, color: Color(0xFF4E2F1A)),
-                            Icon(Icons.edit, color: Color(0xFF4E2F1A)),
-                            Icon(Icons.delete, color: Color(0xFF4E2F1A)),
+                            _roundedIconButton(Icons.add),
+                            const SizedBox(width: 6),
+                            _roundedIconButton(Icons.edit),
+                            const SizedBox(width: 6),
+                            _roundedIconButton(Icons.delete),
                           ],
-                        )
+                        ),
                       ],
                     ),
                     const SizedBox(height: 10),
@@ -381,10 +399,25 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                     const SizedBox(height: 16),
                     Align(
                       alignment: Alignment.centerRight,
-                      child: IconButton(
+                      child: TextButton(
                         onPressed: () =>
                             Navigator.pushNamed(context, '/announcement'),
-                        icon: const Icon(Icons.arrow_forward_ios_rounded),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: const [
+                            Text(
+                              "View",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Urbanist',
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF3B2418),
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF3B2418)),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -395,7 +428,6 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
 
               // dashbord overview card
               dashboardOverviewCard(context),
-                  //to be improved idk how to fix this
                   const SizedBox(height: 150),
             ],
           ),
@@ -449,7 +481,7 @@ class _BottomIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(image, width: 40, height: 40),
+        Image.asset(image, width: 48, height: 48),
         const SizedBox(height: 6),
         Text(
           label,

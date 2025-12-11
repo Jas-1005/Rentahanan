@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/material/icons.dart';
 import 'manager_helper.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class ManagerManageTenantsPage extends StatefulWidget {
   const ManagerManageTenantsPage({super.key});
@@ -66,6 +66,7 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                                   color: Colors.black,
                                 )
                             ),
+                            // List of tenants
                             child: Column(
                               children: [
                                 Text("Name"),
@@ -74,13 +75,57 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                                 Row(
                                   children: [
                                     ElevatedButton(
-                                        onPressed: () => Navigator.pushNamed(context, '/manager-view-tenant-info', arguments: "tenant ID"),
-                                        child: Text("VIEW INFO")
+                                        onPressed: () => Navigator.pushNamed(
+                                            context,
+                                            '/manager-view-tenant-info',
+                                            arguments: "tenant ID",
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFFEFEBE8),
+                                          foregroundColor: Colors.white,
+                                          elevation: 6,
+                                          shadowColor: Colors.black54,
+                                          padding: EdgeInsets.symmetric(horizontal: 20),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: Text(
+                                            "VIEW INFO",
+                                          style: TextStyle(
+                                            fontFamily: 'Urbanist',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                            color: Color(0xFF3A2212),
+                                          ),
+                                        )
                                     ),
+                                    const SizedBox(width: 10),
                                     ElevatedButton(
-                                        onPressed: () => Navigator.pushNamed(context, '/manager-input-tenant-due', arguments: "tenant ID"),
-                                        child: Text("ADD DUES")
-                                    )
+                                        onPressed: () => Navigator.pushNamed(
+                                            context,
+                                            '/manager-input-tenant-due',
+                                            arguments: "tenant ID",
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          backgroundColor: Color(0xFF3A2212), // dark brown
+                                          foregroundColor: Colors.white,
+                                          elevation: 6,
+                                          shadowColor: Colors.black54,
+                                          padding: EdgeInsets.symmetric(horizontal: 20),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(30),
+                                          ),
+                                        ),
+                                        child: Text(
+                                            "ADD DUES",
+                                          style: TextStyle(
+                                            fontFamily: 'Urbanist',
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                    ),
                                   ],
                                 )
                               ],
@@ -125,11 +170,11 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
         children: [
           Expanded(
             child: Container(
-              height: 48,
+              height: 30,
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(14),
+                borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 15,
@@ -138,17 +183,18 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                   )
                 ],
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.search, color: Colors.grey),
+                  Icon(Icons.search, color: Colors.brown.withOpacity(0.4)),
                   SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      "Search tenant...",
+                      "Search tenant",
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey,
+                        color: Colors.brown.withOpacity(0.4),
                         fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
@@ -157,14 +203,13 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
             ),
           ),
           const SizedBox(width: 10),
-
-          // Sort Button
+          // Filter Button
           Container(
-            height: 48,
+            height: 30,
             padding: const EdgeInsets.symmetric(horizontal: 14),
             decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(14),
+              color: Color(0xFF3A2212),
+              borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
                   blurRadius: 15,
@@ -175,40 +220,125 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
             ),
             child: const Row(
               children: [
+                SizedBox(width: 4),
+                Text("Filter",
+                    style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFFFBF7F0),
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.w600)),
+                Icon(Icons.filter_list, color: Color(0xFFFBF7F0), size: 22),
+              ],
+            ),
+          ),
+          const SizedBox(width: 10),
+          // Sort Button
+          Container(
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  blurRadius: 15,
+                  spreadRadius: 1,
+                  color: Colors.black.withOpacity(0.08),
+                )
+              ],
+            ),
+            child: Row(
+              children: [
                 Text("Sort By",
                     style: TextStyle(
                         fontFamily: 'Urbanist',
+                        fontSize: 14,
+                        color: Color(0xFF301600),
                         fontWeight: FontWeight.w600)),
                 Icon(Icons.arrow_drop_down)
               ],
             ),
           ),
           const SizedBox(width: 10),
-
-          // Filter Button
-          Container(
-            height: 48,
-            padding: const EdgeInsets.symmetric(horizontal: 14),
-            decoration: BoxDecoration(
-              color: Color(0xFF3A2212),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.filter_list, color: Colors.white, size: 22),
-                SizedBox(width: 4),
-                Text("Filter",
-                    style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.white,
-                        fontFamily: 'Urbanist',
-                        fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 }
+
+// add class for tenant card widget
+class TenantCard extends StatelessWidget {
+  final String image;
+  final String name;
+  final String roomType;
+
+  const TenantCard({
+    super.key,
+    required this.image,
+    required this.name,
+    required this.roomType,
+});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              image,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+            ),
+          ),
+          const SizedBox(width: 16),
+
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontFamily: 'Urbanist',
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF3B2418),
+                  ),
+                ),
+                Text(
+                  "Room Type: $roomType",
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                    fontFamily: 'Urbanist',
+                  ),
+                ),
+                const SizedBox(height: 10),
+              ],
+            )
+          )
+        ],
+      )
+    );
+  }
+}
+
+
 

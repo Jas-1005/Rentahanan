@@ -76,7 +76,8 @@ flutter:
     - assets/images/profile.png
     - assets/images/payments.png
     - assets/images/message.png
-
+    - assets/images/user1.png
+    - assets/images/user2.png
   fonts:
     - family: Perandory
       fonts:

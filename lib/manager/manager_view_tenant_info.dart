@@ -27,35 +27,40 @@ class _ManagerViewTenantInfoPageState extends State<ManagerViewTenantInfoPage> {
     final tenantID = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-        appBar: AppBar(title: Text("Tenant Info (id: $tenantID)")),
-        body: Container(
-          width: double.infinity,
-          height: 500,
-          margin: EdgeInsets.all(20),
-          padding: EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black,
-              )
-          ),
+        backgroundColor: const Color(0xFFF3F1EC),
+        //appBar: AppBar(title: Text("Tenant Info (id: $tenantID)")),
+        body: SafeArea(
           child: Column(
             children: [
-              Text("Get tenant name"),
-              Text("Get room number and room type"),
-              Text("Get tenant email"),
-              Text("Contact number"),
-              Text("Get tenant address"),
-              ElevatedButton(
-                  onPressed: () {},
-                  child: Text("View payment history")
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                child: Row(
+                  children: [
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+                      color: const Color(0xFF3B2418),
+                    ),
+                    const Expanded(
+                      child: Center(
+                        child: Text(
+                          "Tenant Info",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'Urbanist',
+                            color: Color(0xFF3B2418),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                  ],
+                ),
               ),
-              ElevatedButton(
-                  onPressed: () {},
-                  child: Text("View dues")
-              )
-            ],
-          ),
-        )
+              ],
+            ),
+        ),
     );
   }
 }

@@ -46,7 +46,7 @@ class _ManagerInputTenantDuePageState extends State<ManagerInputTenantDuePage> {
     final tenantID = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-      appBar: AppBar(title: Text("Add Tenant Due (id: $tenantID)")),
+      //appBar: AppBar(title: Text("Add Tenant Due (id: $tenantID)")),
       body: Column(
         children: [
           Container(

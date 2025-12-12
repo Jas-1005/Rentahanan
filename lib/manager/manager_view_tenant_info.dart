@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/material/icons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'manager_helper.dart';
 
 
@@ -21,46 +22,245 @@ class _ManagerViewTenantInfoPageState extends State<ManagerViewTenantInfoPage> {
 
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final tenantID = ModalRoute.of(context)!.settings.arguments as String;
+    final tenantName = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-        backgroundColor: const Color(0xFFF3F1EC),
-        //appBar: AppBar(title: Text("Tenant Info (id: $tenantID)")),
-        body: SafeArea(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: Row(
-                  children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
-                      color: const Color(0xFF3B2418),
-                    ),
-                    const Expanded(
-                      child: Center(
-                        child: Text(
-                          "Tenant Info",
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w600,
-                            fontFamily: 'Urbanist',
-                            color: Color(0xFF3B2418),
-                          ),
+      backgroundColor: const Color(0xFFF3F1EC),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // HEADER
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+                    color: const Color(0xFF3B2418),
+                  ),
+                  const Expanded(
+                    child: Center(
+                      child: Text(
+                        "Tenant Info",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'Urbanist',
+                          color: Color(0xFF3B2418),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 40),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 40),
+                ],
               ),
-              ],
             ),
+
+            // TENANT INFO CARD
+            Expanded(
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('tenants')
+                    .where('fullName', isEqualTo: tenantName)
+                    .limit(1)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  }
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+
+                  if (snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text('Tenant not found'));
+                  }
+
+                  final doc = snapshot.data!.docs.first;
+                  final data = doc.data() as Map<String, dynamic>;
+
+                  return SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.08),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              // Profile Image
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.asset(
+                                  data['image'] ?? 'assets/images/cute_cat_placeholder.png',
+                                  width: 140,
+                                  height: 140,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 140,
+                                      height: 140,
+                                      color: Colors.grey[300],
+                                      child: const Icon(Icons.person, size: 60),
+                                    );
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+
+                              // Tenant Name
+                              Text(
+                                data['fullName'] ?? 'N/A',
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Urbanist',
+                                  color: Color(0xFF3B2418),
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+
+                              // Room Type
+                              Text(
+                                'Room Type: ${data['roomType'] ?? 'N/A'}',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.black54,
+                                  fontFamily: 'Urbanist',
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+
+                              // Email
+                              _infoField(
+                                icon: Icons.email_outlined,
+                                label: data['email'] ?? 'No email provided',
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Phone
+                              _infoField(
+                                icon: Icons.phone_outlined,
+                                label: data['phone'] ?? 'No phone provided',
+                              ),
+                              const SizedBox(height: 12),
+
+                              // Address
+                              _infoField(
+                                icon: Icons.location_on_outlined,
+                                label: data['address'] ?? 'No address provided',
+                              ),
+                              const SizedBox(height: 24),
+
+                              // View Payment History Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // TODO: Navigate to payment history
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFEFEBE8),
+                                    foregroundColor: const Color(0xFF3A2212),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'View Payment History',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Urbanist',
+                                      color: Color(0xFF3A2212),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+
+                              // View Dues Button
+                              SizedBox(
+                                width: double.infinity,
+                                height: 48,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // TODO: Navigate to view dues
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color(0xFFEFEBE8),
+                                    foregroundColor: const Color(0xFF3A2212),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'View Dues',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      fontFamily: 'Urbanist',
+                                      color: Color(0xFF3A2212),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _infoField({required IconData icon, required String label}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF3B2418), size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 14,
+                fontFamily: 'Urbanist',
+                color: Color(0xFF222222),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

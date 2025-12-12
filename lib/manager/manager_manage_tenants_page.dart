@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/material/icons.dart';
-import 'manager_helper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'manager_helper.dart';
 
 class ManagerManageTenantsPage extends StatefulWidget {
   const ManagerManageTenantsPage({super.key});
@@ -22,143 +22,98 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title: const Text("Manage Tenants")),
-      backgroundColor: const Color(0xFFF3F1EC),
+      backgroundColor: const Color(0xFFFBF7F0),
       body: SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // HEADER
-          Padding(padding: const EdgeInsetsGeometry.symmetric(horizontal: 20, vertical: 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
-                  color: const Color(0xFF3B2418),
-                ),
-                const Text(
-                  "Tenants",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'Urbanist',
-                    color: Color(0xFF3B2418),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-            _buildSearchBar(),
-          const SizedBox(height: 10),
-          Expanded(
-              child: Stack(
+        child: Column(
+          children: [
+            // HEADER
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.black,
-                                )
-                            ),
-                            // List of tenants
-                            child: Column(
-                              children: [
-                                Text("Name"),
-                                Text("Room name and type"),
-                                Text("Payment status and due date"),
-                                Row(
-                                  children: [
-                                    ElevatedButton(
-                                        onPressed: () => Navigator.pushNamed(
-                                            context,
-                                            '/manager-view-tenant-info',
-                                            arguments: "tenant ID",
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFFEFEBE8),
-                                          foregroundColor: Colors.white,
-                                          elevation: 6,
-                                          shadowColor: Colors.black54,
-                                          padding: EdgeInsets.symmetric(horizontal: 20),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                        ),
-                                        child: Text(
-                                            "VIEW INFO",
-                                          style: TextStyle(
-                                            fontFamily: 'Urbanist',
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                            color: Color(0xFF3A2212),
-                                          ),
-                                        )
-                                    ),
-                                    const SizedBox(width: 10),
-                                    ElevatedButton(
-                                        onPressed: () => Navigator.pushNamed(
-                                            context,
-                                            '/manager-input-tenant-due',
-                                            arguments: "tenant ID",
-                                        ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Color(0xFF3A2212), // dark brown
-                                          foregroundColor: Colors.white,
-                                          elevation: 6,
-                                          shadowColor: Colors.black54,
-                                          padding: EdgeInsets.symmetric(horizontal: 20),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30),
-                                          ),
-                                        ),
-                                        child: Text(
-                                            "ADD DUES",
-                                          style: TextStyle(
-                                            fontFamily: 'Urbanist',
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 14,
-                                          ),
-                                        ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      )
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+                    color: const Color(0xFF3B2418),
                   ),
-                  Positioned(
-                    bottom: 16,
-                    right: 16,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(100),
-                        color: Color(0xFF9B6A44)
-                      ),
-                      child: SizedBox(
-                        height: 55,
-                        width: 55,
-                        child: IconButton(
-                          padding: EdgeInsets.all(0),
-                          onPressed: () => Navigator.pushNamed(context, '/manager-tenant-requests'),
-                          color: Colors.white,
-                          icon: Icon(Icons.add, size: 44)
-                        ),
-                      )
-                    )
-                  )
+                  const Text(
+                    "Manage Tenants",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w600,
+                      fontFamily: 'Urbanist',
+                      color: Color(0xFF3B2418),
+                    ),
+                  ),
+                  const SizedBox(width: 40),
                 ],
-              )
-          )
-        ],
-      ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _buildSearchBar(),
+            const SizedBox(height: 10),
+            // TENANT LIST
+            Expanded(
+                child: Stack(
+                  children: [
+                    StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance //firebase firestore path to tenants
+                          .collection('tenants')
+                          .snapshots(),
+                      builder: (context, snapshot) { //builder for tenant list
+                        if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        }
+                        if (snapshot.connectionState == ConnectionState.waiting) { //loading state
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        final tenantDocs = snapshot.data!.docs; //list of tenant documents
+                        if (tenantDocs.isEmpty) { 
+                          return const Center(child: Text('No tenants found'));
+                        }
+                        return SingleChildScrollView( 
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            children: tenantDocs.map((doc) { //map each document to TenantCard
+                              final tenant = Tenant.fromDoc(doc);
+                              return TenantCard(
+                                image: tenant.image ?? 'assets/images/user1.png',
+                                name: tenant.name,
+                                roomInfo: tenant.roomInfo,
+                                paymentStatus: tenant.paymentStatus,
+                              );
+                            }).toList(), 
+                          ),
+                        );
+                      },
+                    ),
+                    //ICON BUTTON TO ADD TENANT REQUEST PAGE
+                    Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: Container(
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(100),
+                                color: Color(0xFF9B6A44)
+                            ),
+                            child: SizedBox(
+                              height: 55,
+                              width: 55,
+                              child: IconButton(
+                                  padding: EdgeInsets.all(0),
+                                  onPressed: () => Navigator.pushNamed(context, '/manager-tenant-requests'),
+                                  color: Colors.white,
+                                  icon: Icon(Icons.add, size: 44)
+                              ),
+                            )
+                        )
+                    )
+                  ],
+                )
+            )
+          ],
+        ),
       ),
     );
   }
@@ -266,22 +221,51 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
   }
 }
 
+// Tenant model
+class Tenant {
+  final String id;
+  final String name;
+  final String roomInfo;
+  final String paymentStatus;
+  final String? image;
+
+  Tenant({
+    required this.id,
+    required this.name,
+    required this.roomInfo,
+    required this.paymentStatus,
+    this.image,
+  });
+
+  factory Tenant.fromDoc(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    return Tenant(
+      id: doc.id,
+      name: data['fullName'] as String? ?? 'No name',
+      roomInfo: data['roomInfo'] as String? ?? '',
+      paymentStatus: data['paymentStatus'] as String? ?? '',
+      image: data['image'] as String?,
+    );
+  }
+}
+
 // add class for tenant card widget
 class TenantCard extends StatelessWidget {
   final String image;
   final String name;
-  final String roomType;
+  final String roomInfo;
+  final String paymentStatus;
 
   const TenantCard({
     super.key,
     required this.image,
     required this.name,
-    required this.roomType,
-});
+    required this.roomInfo,
+    required this.paymentStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -305,6 +289,14 @@ class TenantCard extends StatelessWidget {
               width: 70,
               height: 70,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 70,
+                  height: 70,
+                  color: Colors.grey[300],
+                  child: const Icon(Icons.person),
+                );
+              },
             ),
           ),
           const SizedBox(width: 16),
@@ -316,26 +308,94 @@ class TenantCard extends StatelessWidget {
                 Text(
                   name,
                   style: const TextStyle(
-                    fontSize: 18,
+                    fontSize: 16,
                     fontFamily: 'Urbanist',
                     fontWeight: FontWeight.w700,
                     color: Color(0xFF3B2418),
                   ),
                 ),
                 Text(
-                  "Room Type: $roomType",
+                  roomInfo,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
+                    color: Colors.black54,
+                    fontFamily: 'Urbanist',
+                  ),
+                ),
+                Text(
+                  paymentStatus,
+                  style: const TextStyle(
+                    fontSize: 13,
                     color: Colors.black54,
                     fontFamily: 'Urbanist',
                   ),
                 ),
                 const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          '/manager-view-tenant-info',
+                          arguments: name,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFFEFEBE8),
+                          foregroundColor: Colors.white,
+                          elevation: 6,
+                          shadowColor: Colors.black54,
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          "VIEW INFO",
+                          style: TextStyle(
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: Color(0xFF3A2212),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: ElevatedButton(
+                        onPressed: () => Navigator.pushNamed(
+                          context,
+                          '/manager-input-tenant-due',
+                          arguments: name,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF3A2212),
+                          foregroundColor: Colors.white,
+                          elevation: 6,
+                          shadowColor: Colors.black54,
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        child: const Text(
+                          "ADD DUES",
+                          style: TextStyle(
+                            fontFamily: 'Urbanist',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
-            )
+            ),
           )
         ],
-      )
+      ),
     );
   }
 }

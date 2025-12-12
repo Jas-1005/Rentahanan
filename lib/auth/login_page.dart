@@ -294,7 +294,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         InkWell(
                             onTap: (){
-                              Navigator.pushReplacementNamed(context, '/manager-signup');
+                              Navigator.pushReplacementNamed(context, '/signup');
                             },
                             child: const Text(
                                 "Sign up here",

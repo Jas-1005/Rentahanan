@@ -226,7 +226,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                         SizedBox(height: 6),
                         //sample only
                         Text(
-                          "₱18,450",
+                          "Php 18,450",
                           style: TextStyle(
                               fontSize: 28,
                               fontFamily: 'Urbanist',
@@ -275,10 +275,8 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
               ),
             ),
             child: GridView.count(
-              crossAxisCount: 5,
+              crossAxisCount: 4,
               shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              childAspectRatio: 0.75,
               mainAxisSpacing: 2,
               crossAxisSpacing: 2,
               children: menuItems.map((item) {
@@ -288,7 +286,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       Navigator.pushNamed(
                         context,
                         item['route'],
-                        arguments: item['tenantID'],   // <-- passes tenantID
+                        arguments: item['tenantID'],
                       )
                     } else {
                       Navigator.pushNamed(context, item['route'])
@@ -306,6 +304,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -318,149 +317,134 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Main content with bottom padding for navbar
-              // HEADER
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Image.asset('assets/images/LOGO.png', height: 30),
-                      const SizedBox(width: 5),
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/images/LOGO.png', height: 30),
+                          const SizedBox(width: 5),
 
-                      Baseline(
-                        baseline: 32,
-                        baselineType: TextBaseline.alphabetic,
-                        child: Text(
-                          "Hello, Mngr. $managerName!",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontFamily: 'Urbanist',
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF4E2F1A),
+                          Baseline(
+                            baseline: 32,
+                            baselineType: TextBaseline.alphabetic,
+                            child: Text(
+                              "Hello, Mngr. $managerName!",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontFamily: 'Urbanist',
+                                fontWeight: FontWeight.w600,
+                                color: Color(0xFF4E2F1A),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(right: 4),
+                        child: Icon(Icons.notifications,
+                            size: 30, color: Colors.black87),
                       ),
                     ],
                   ),
-
-                  const Padding(
-                    padding: EdgeInsets.only(right: 4),
-                    child: Icon(Icons.notifications,
-                        size: 30, color: Colors.black87),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 24),
-
-              //announcements
-              softCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  const SizedBox(height: 24),
+                  //announcements
+                  softCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Announcements:',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontFamily: 'Urbanist',
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF3B2418),
-                              ),
-                            ),
-                        ),
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            _roundedIconButton(Icons.add),
-                            const SizedBox(width: 6),
-                            _roundedIconButton(Icons.edit),
-                            const SizedBox(width: 6),
-                            _roundedIconButton(Icons.delete),
+                            Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'Announcements:',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontFamily: 'Urbanist',
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF3B2418),
+                                  ),
+                                ),
+                            ),
+                            Row(
+                              children: [
+                                _roundedIconButton(Icons.add),
+                                const SizedBox(width: 6),
+                                _roundedIconButton(Icons.edit),
+                                const SizedBox(width: 6),
+                                _roundedIconButton(Icons.delete),
+                              ],
+                            ),
                           ],
+                        ),
+                        const SizedBox(height: 10),
+                        const Text(
+                          "Power outage notice: Scheduled maintenance on Oct. 17, 1–3 PM. Expect temporary interruption!",
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: 'Urbanist',
+                              fontWeight: FontWeight.w500,
+                              height: 1.4,
+                              color: Color(0xFF222222)),
+                        ),
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            onPressed: () =>
+                                Navigator.pushNamed(context, '/announcement'),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: const [
+                                Text(
+                                  "View",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Urbanist',
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF3B2418),
+                                  ),
+                                ),
+                                SizedBox(width: 4),
+                                Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF3B2418)),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    const Text(
-                      "Power outage notice: Scheduled maintenance on Oct. 17, 1–3 PM. Expect temporary interruption!",
-                      style: TextStyle(
-                          fontSize: 14,
-                          fontFamily: 'Urbanist',
-                          fontWeight: FontWeight.w500,
-                          height: 1.4,
-                          color: Color(0xFF222222)),
-                    ),
-                    const SizedBox(height: 16),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () =>
-                            Navigator.pushNamed(context, '/announcement'),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Text(
-                              "View",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Urbanist',
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF3B2418),
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF3B2418)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // dashbord overview card
-              dashboardOverviewCard(context),
+                  ),
+                  const SizedBox(height: 24),
+                  dashboardOverviewCard(context),
                   const SizedBox(height: 150),
-            ],
-          ),
-        ),
-        // nav bar should be fixed at bottom
+                ],
+              ),
+            ),
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
-              child: SafeArea(
-                bottom: true,
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    width: 370,
-                    height: 80,
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.20),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
-                        ),
-                      ],
+              child: Container(
+                width: 370,
+                height: 80,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(40),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.20),
+                      blurRadius: 20,
+                      offset: const Offset(0, 6),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: ManagerHelper.buildNavItems(context),
-                    ),
-                  ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: ManagerHelper.buildNavItems(context),
                 ),
               ),
             )
@@ -480,9 +464,9 @@ class _BottomIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      spacing: 6,
       children: [
-        Image.asset(image, width: 48, height: 48),
-        const SizedBox(height: 6),
+        Image.asset(image, width: 40, height: 40),
         Text(
           label,
           textAlign: TextAlign.center,

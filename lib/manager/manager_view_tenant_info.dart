@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/material/icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rentahanan/entities/tenant.dart';
-import 'manager_helper.dart';
 
 
 class ManagerViewTenantInfoPage extends StatefulWidget {
@@ -15,13 +11,9 @@ class ManagerViewTenantInfoPage extends StatefulWidget {
 
 class _ManagerViewTenantInfoPageState extends State<ManagerViewTenantInfoPage> {
 
-  Future <void> fetchTenantInfo() async { //firebase fetch info from manager info
+  Future <void> fetchTenantInfo() async {}
 
-  }
-
-  Future <void> tenantActions() async {
-
-  }
+  Future <void> tenantActions() async {}
 
   @override
   Widget build(BuildContext context) {

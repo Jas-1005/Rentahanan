@@ -22,7 +22,7 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
   String boardingHouseName = '';
   String contactNumber = '';
   String errorMessage = '';
-  bool _obscureText = true;
+  List<bool> _obscureText = [true, true];
   bool _isLoading = false;
 
   Widget buildRoundedField(String label, Function(String?) onSaved,
@@ -79,11 +79,11 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
     );
   }
 
-  Widget buildPasswordField() {
+  Widget buildPasswordField(String label, Function(String?) onSaved, int index) {
     return TextFormField(
-      obscureText: _obscureText,
+      obscureText: _obscureText[index],
       decoration: InputDecoration(
-        hintText: "Password",
+        hintText: label,
         hintStyle: TextStyle(
             fontFamily: 'Urbanist',
             fontWeight: FontWeight.w600,
@@ -121,11 +121,17 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
           ),
         ),
         suffixIcon: IconButton(
-          icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-          onPressed: () => setState(() => _obscureText = !_obscureText),
+          icon: Icon(_obscureText[index] ? Icons.visibility_off : Icons.visibility),
+          onPressed: () => setState(() => _obscureText[index] = !_obscureText[index]),
         ),
       ),
-      onSaved: (v) => password = v!,
+      onSaved: onSaved,
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Please enter $label";
+        }
+        return null;
+      },
     );
   }
   
@@ -280,11 +286,13 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
                             (v) => contactNumber = v!,
                         keyboardType: TextInputType.number),
                     const SizedBox(height: 16),
-                    buildRoundedField("Dorm Code", (v) {}),
+                    buildRoundedField("Boarding House Name", (v) => boardingHouseName = v!),
                     const SizedBox(height: 16),
                     buildRoundedField("Email Address", (v) => email = v!),
                     const SizedBox(height: 16),
-                    buildPasswordField(),
+                    buildPasswordField("Password", (v) => password = v!, 0),
+                    const SizedBox(height: 16),
+                    buildPasswordField("Confirm Password", (v) => confirmPassword = v!, 1),
                     const SizedBox(height: 28),
                     // add button here
                   Container(

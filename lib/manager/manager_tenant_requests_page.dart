@@ -1,7 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/material/icons.dart';
-import 'manager_helper.dart';
+import 'package:rentahanan/entities/tenant.dart';
 
 
 class ManagerTenantRequestsPage extends StatefulWidget {
@@ -12,9 +12,75 @@ class ManagerTenantRequestsPage extends StatefulWidget {
 }
 
 class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
+  late List<Tenant>  pendingTenants;
+  late List<Tenant>  rejectedTenants;
 
-  Future <void> fetchTenants() async { //firebase fetch info from manager info
+  Future<void> fetchUnapprovedTenants() async {
+    var selfDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
+    
+    var selfBoardingHouseId = selfDoc['boardingHouseId'];
 
+    // Pending Tenants
+    var pendingTenantCollection = await FirebaseFirestore.instance.collection('users')
+        .where('boardingHouseId', isEqualTo: selfBoardingHouseId)
+        .where('role', isEqualTo: 'tenant')
+        .where('confirmedByManager', isEqualTo: 'pending')
+        .get();
+
+    List<Tenant> pendingList = [];
+    for (var tenantDoc in pendingTenantCollection.docs){
+      var tenant = Tenant(
+          id: tenantDoc.id,
+          fullName: tenantDoc['fullName'],
+          email: tenantDoc['email'],
+          contactNumber: tenantDoc['contactNumber']);
+      pendingList.add(tenant);
+    }
+
+    // Rejected Tenants
+    var rejectedTenantCollection = await FirebaseFirestore.instance.collection('users')
+        .where('boardingHouseId', isEqualTo: selfBoardingHouseId)
+        .where('role', isEqualTo: 'tenant')
+        .where('confirmedByManager', isEqualTo: 'rejected')
+        .get();
+
+    List<Tenant> rejectedList = [];
+    for (var tenantDoc in rejectedTenantCollection.docs){
+      var tenant = Tenant(
+          id: tenantDoc.id,
+          fullName: tenantDoc['fullName'],
+          email: tenantDoc['email'],
+          contactNumber: tenantDoc['contactNumber']);
+      rejectedList.add(tenant);
+    }
+
+    setState(() {
+      pendingTenants = pendingList;
+      rejectedTenants = rejectedList;
+    });
+  }
+
+  Future<void> approveTenant(String tenantId) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(tenantId)
+        .update({'confirmedByManager': 'approved'});
+  }
+
+  Future<void> rejectTenant(String tenantId) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(tenantId)
+        .update({'confirmedByManager': 'rejected'});
+  }
+
+  @override
+  void initState() {
+    fetchUnapprovedTenants();
+    super.initState();
   }
 
   @override
@@ -71,13 +137,14 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       child: Column(
                         children: [
-                          _buildRequestCard(
-                            name: "Full Name",
-                            email: "email@example.com",
-                            phone: "(09XX) - XXX - XXXX",
-                            onApprove: () {},
-                            onDeny: () {},
-                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: pendingTenants.length,
+                            itemBuilder: (context, index) {
+                              var tenant = pendingTenants[index];
+                              return _buildRequestCard(tenant, false);
+                            },
+                          )
                         ],
                       ),
                     ),
@@ -87,14 +154,14 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       child: Column(
                         children: [
-                          _buildRequestCard(
-                            name: "Full Name",
-                            email: "email@example.com",
-                            phone: "(09XX) - XXX - XXXX",
-                            onApprove: null,
-                            onDeny: null,
-                            isDenied: true,
-                          ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: rejectedTenants.length,
+                            itemBuilder: (context, index) {
+                              var tenant = rejectedTenants[index];
+                              return _buildRequestCard(tenant, true);
+                            },
+                          )
                         ],
                       ),
                     ),
@@ -108,14 +175,7 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
     );
   }
 
-  Widget _buildRequestCard({
-    required String name,
-    required String email,
-    required String phone,
-    VoidCallback? onApprove,
-    VoidCallback? onDeny,
-    bool isDenied = false,
-  }) {
+  Widget _buildRequestCard(Tenant tenant, bool isDenied) {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 16),
@@ -138,7 +198,7 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  tenant.fullName,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w700,
@@ -148,7 +208,7 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  email,
+                  tenant.email,
                   style: const TextStyle(
                     fontSize: 13,
                     fontFamily: 'Urbanist',
@@ -157,7 +217,7 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  phone,
+                  tenant.contactNumber,
                   style: const TextStyle(
                     fontSize: 13,
                     fontFamily: 'Urbanist',
@@ -169,7 +229,11 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
           ),
           if (!isDenied) ...[
             ElevatedButton(
-              onPressed: onApprove,
+              onPressed: () async {
+                await approveTenant(tenant.id);
+                await fetchUnapprovedTenants();
+                setState(() {});
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFEFEBE8),
                 foregroundColor: const Color(0xFF3A2212),
@@ -191,7 +255,11 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
             ),
             const SizedBox(width: 8),
             ElevatedButton(
-              onPressed: onDeny,
+              onPressed: () async {
+                await rejectTenant(tenant.id);
+                await fetchUnapprovedTenants();
+                setState(() {});
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF3A2212),
                 foregroundColor: Colors.white,
@@ -202,7 +270,7 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                 ),
               ),
               child: const Text(
-                "Deny",
+                "Reject",
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,

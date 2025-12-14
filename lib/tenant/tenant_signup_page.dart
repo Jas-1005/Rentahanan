@@ -21,8 +21,8 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
   String boardingHouseCode = '';
   String contactNumber = '';
   String errorMessage = '';
-  bool isTenantConfirmed = false;
-  bool _obscureText = true;
+  String isTenantConfirmed = "pending";
+  List<bool> _obscureText = [true, true];
   bool _isLoading = false;
   String boardingHouseID = '';
 
@@ -84,7 +84,7 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
       String userID = userCredential.user!.uid;
 
       await FirebaseFirestore.instance.collection('users').doc(userID).set({
-        'boardingHouseID': boardingHouseID,
+        'boardingHouseId': boardingHouseID,
         'fullName': fullName,
         'email': email,
         'contactNumber': contactNumber,
@@ -128,6 +128,49 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
     }
   }
 
+  Widget buildInfoTextField({
+    required String label,
+    required String? Function(String?) validator,
+    required void Function(String?) onSaved,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: label,
+        border: const OutlineInputBorder(),
+      ),
+      keyboardType: keyboardType,
+      validator: validator,
+      onSaved: onSaved,
+    );
+  }
+
+  Widget buildPasswordTextField({
+    required String label,
+    required String? Function(String?) validator,
+    required void Function(String?) onSaved,
+    required int stateIndex,
+    TextInputType keyboardType = TextInputType.text,
+
+  }) {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: label,
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: Icon(_obscureText[stateIndex] ? Icons.visibility_off : Icons.visibility),
+          onPressed: () => setState(() => _obscureText[stateIndex] = !_obscureText[stateIndex]),
+        ),
+      ),
+      obscureText: _obscureText[stateIndex],
+      keyboardType: keyboardType,
+      validator: validator,
+      onSaved: onSaved,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,105 +181,69 @@ class _TenantSignupPageState extends State<TenantSignupPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Please your full name';
-                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
-                    return 'Please input a valid full name';
-                  }
-                  return null;
-                },
-                onSaved: (value) => fullName = value!,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter your email';
-                  if (!value.contains('@') || !value.contains('.')) return 'Invalid email';
-                  return null;
-                },
-                onSaved: (value) => email = value!,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscureText = !_obscureText),
+              Column(
+                spacing: 20,
+                children: [
+                  buildInfoTextField(
+                    label: 'Full Name',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Please your full name';
+                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(value)) {
+                        return 'Please input a valid full name';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) => fullName = value!,
                   ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter your password';
-                  return null;
-                },
-                onSaved: (value) => password = value!,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  labelText: 'Confirm Password',
-                  border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(
-                    icon: Icon(_obscureText ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _obscureText = !_obscureText),
+                  buildInfoTextField(
+                    label: 'Email',
+                    keyboardType: TextInputType.emailAddress,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Enter your email';
+                      if (!value.contains('@') || !value.contains('.')) return 'Invalid email';
+                      return null;
+                    },
+                    onSaved: (value) => email = value!,
                   ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Retype your password';
-                  return null;
-                },
-                onSaved: (value) => confirmPassword = value!,
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Boarding House Code',
-                  border: OutlineInputBorder(),
-                  suffixIcon: Tooltip(
-                    message: "Get your boarding house code from your BH manager ",
-                    child: Icon(Icons.help_outline),
-                  )
-                ),
-                inputFormatters: [
-                  LengthLimitingTextInputFormatter(6),   // optional: limit length
+                  buildPasswordTextField(
+                    label: 'Password',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Enter your password';
+                      return null;
+                    },
+                    onSaved: (value) => password = value!,
+                    stateIndex: 0
+                  ),
+                  buildPasswordTextField(
+                    label: 'Confirm Password',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'Confirm your password';
+                      return null;
+                    },
+                    onSaved: (value) => confirmPassword = value!,
+                    stateIndex: 1
+                  ),
+                  buildInfoTextField(
+                    label: 'Boarding House Code',
+                    validator: (value) {
+                      if (value == null || value.isEmpty) return 'You need a boarding house code to create an account.';
+                      return null;
+                    },
+                    onSaved: (value) => boardingHouseCode = value!,
+                  ),
+                  buildInfoTextField(
+                    label: 'Contact Number',
+                      validator: (value) {
+                        if (value == null || value.isEmpty) return 'Enter your contact number.';
+                        if (!RegExp(r'^09\d{9}$').hasMatch(value)) {
+                          return 'Please input a valid phone number';
+                        }
+                        return null;
+                      },
+                    onSaved: (value) => contactNumber = value!,
+                    keyboardType: TextInputType.number
+                  ),
                 ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'You need a boarding house code to create an account.';
-                  return null;
-                },
-                onSaved: (value) => boardingHouseCode = value!,
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Contact Number',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.number, // shows numeric keyboard
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly, // only allow digits
-                  LengthLimitingTextInputFormatter(11),   // optional: limit length
-                ],
-                validator: (value) {
-                  if (value == null || value.isEmpty) return 'Enter your contact number.';
-                  if (!RegExp(r'^09\d{9}$').hasMatch(value)) {
-                    return 'Please input a valid phone number';
-                  }
-                  return null;
-                },
-                onSaved: (value) => contactNumber = value!,
               ),
               const SizedBox(height: 20),
               ElevatedButton(

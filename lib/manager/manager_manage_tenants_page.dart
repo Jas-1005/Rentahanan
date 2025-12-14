@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/src/material/icons.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'manager_helper.dart';
+
+import '../entities/tenant.dart';
 
 class ManagerManageTenantsPage extends StatefulWidget {
   const ManagerManageTenantsPage({super.key});
@@ -12,9 +12,41 @@ class ManagerManageTenantsPage extends StatefulWidget {
 }
 
 class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
+  late List<Tenant> approvedTenants;
 
   Future <void> fetchTenants() async { //firebase fetch info from manager info
+    var selfDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get();
 
+    var selfBoardingHouseId = selfDoc['boardingHouseId'];
+
+    var pendingTenantCollection = await FirebaseFirestore.instance.collection('users')
+        .where('boardingHouseId', isEqualTo: selfBoardingHouseId)
+        .where('role', isEqualTo: 'tenant')
+        .where('confirmedByManager', isEqualTo: 'approved')
+        .get();
+
+    List<Tenant> approvedList = [];
+    for (var tenantDoc in pendingTenantCollection.docs){
+      var tenant = Tenant(
+          id: tenantDoc.id,
+          fullName: tenantDoc['fullName'],
+          email: tenantDoc['email'],
+          contactNumber: tenantDoc['contactNumber']);
+      approvedList.add(tenant);
+    }
+
+    setState(() {
+      approvedTenants = approvedList;
+    });
+  }
+
+  @override
+  void initState() {
+    fetchTenants();
+    super.initState();
   }
 
 
@@ -55,62 +87,45 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
             const SizedBox(height: 10),
             // TENANT LIST
             Expanded(
-                child: Stack(
-                  children: [
-                    StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance //firebase firestore path to tenants
-                          .collection('tenants')
-                          .snapshots(),
-                      builder: (context, snapshot) { //builder for tenant list
-                        if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
-                        }
-                        if (snapshot.connectionState == ConnectionState.waiting) { //loading state
-                          return const Center(child: CircularProgressIndicator());
-                        }
-                        final tenantDocs = snapshot.data!.docs; //list of tenant documents
-                        if (tenantDocs.isEmpty) { 
-                          return const Center(child: Text('No tenants found'));
-                        }
-                        return SingleChildScrollView( 
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Column(
-                            children: tenantDocs.map((doc) { //map each document to TenantCard
-                              final tenant = Tenant.fromDoc(doc);
-                              return TenantCard(
-                                image: tenant.image ?? 'assets/images/user1.png',
-                                name: tenant.name,
-                                roomInfo: tenant.roomInfo,
-                                paymentStatus: tenant.paymentStatus,
-                              );
-                            }).toList(), 
-                          ),
-                        );
-                      },
-                    ),
-                    //ICON BUTTON TO ADD TENANT REQUEST PAGE
-                    Positioned(
-                        bottom: 16,
-                        right: 16,
-                        child: Container(
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(100),
-                                color: Color(0xFF9B6A44)
-                            ),
-                            child: SizedBox(
-                              height: 55,
-                              width: 55,
-                              child: IconButton(
-                                  padding: EdgeInsets.all(0),
-                                  onPressed: () => Navigator.pushNamed(context, '/manager-tenant-requests'),
-                                  color: Colors.white,
-                                  icon: Icon(Icons.add, size: 44)
-                              ),
-                            )
+              child: Stack(
+                children: [
+                  SingleChildScrollView(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Column(
+                      children: [
+                        ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: approvedTenants.length,
+                          itemBuilder: (context, index) {
+                            return _buildTenantCard(tenant: approvedTenants[index]);
+                          },
                         )
+                      ],
+                    ),
+                  ),
+                  //ICON BUTTON TO ADD TENANT REQUEST PAGE
+                  Positioned(
+                    bottom: 16,
+                    right: 16,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: Color(0xFF9B6A44)
+                      ),
+                      child: SizedBox(
+                        height: 55,
+                        width: 55,
+                        child: IconButton(
+                          padding: EdgeInsets.all(0),
+                          onPressed: () => Navigator.pushNamed(context, '/manager-tenant-requests'),
+                          color: Colors.white,
+                          icon: Icon(Icons.add, size: 44)
+                        ),
+                      )
                     )
-                  ],
-                )
+                  )
+                ],
+              )
             )
           ],
         ),
@@ -219,53 +234,8 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
       ),
     );
   }
-}
 
-// Tenant model
-class Tenant {
-  final String id;
-  final String name;
-  final String roomInfo;
-  final String paymentStatus;
-  final String? image;
-
-  Tenant({
-    required this.id,
-    required this.name,
-    required this.roomInfo,
-    required this.paymentStatus,
-    this.image,
-  });
-
-  factory Tenant.fromDoc(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>? ?? {};
-    return Tenant(
-      id: doc.id,
-      name: data['fullName'] as String? ?? 'No name',
-      roomInfo: data['roomInfo'] as String? ?? '',
-      paymentStatus: data['paymentStatus'] as String? ?? '',
-      image: data['image'] as String?,
-    );
-  }
-}
-
-// add class for tenant card widget
-class TenantCard extends StatelessWidget {
-  final String image;
-  final String name;
-  final String roomInfo;
-  final String paymentStatus;
-
-  const TenantCard({
-    super.key,
-    required this.image,
-    required this.name,
-    required this.roomInfo,
-    required this.paymentStatus,
-  });
-
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildTenantCard({required Tenant tenant}) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
@@ -285,7 +255,7 @@ class TenantCard extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: Image.asset(
-              image,
+              tenant.image,
               width: 70,
               height: 70,
               fit: BoxFit.cover,
@@ -306,7 +276,7 @@ class TenantCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
+                  tenant.fullName,
                   style: const TextStyle(
                     fontSize: 16,
                     fontFamily: 'Urbanist',
@@ -315,7 +285,7 @@ class TenantCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  roomInfo,
+                  tenant.roomName,
                   style: const TextStyle(
                     fontSize: 13,
                     color: Colors.black54,
@@ -323,7 +293,7 @@ class TenantCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  paymentStatus,
+                  tenant.paymentStatus,
                   style: const TextStyle(
                     fontSize: 13,
                     color: Colors.black54,
@@ -338,7 +308,7 @@ class TenantCard extends StatelessWidget {
                         onPressed: () => Navigator.pushNamed(
                           context,
                           '/manager-view-tenant-info',
-                          arguments: name,
+                          arguments: tenant,
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFFEFEBE8),
@@ -367,7 +337,7 @@ class TenantCard extends StatelessWidget {
                         onPressed: () => Navigator.pushNamed(
                           context,
                           '/manager-input-tenant-due',
-                          arguments: name,
+                          arguments: tenant,
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF3A2212),

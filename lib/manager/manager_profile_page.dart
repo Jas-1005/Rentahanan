@@ -91,7 +91,7 @@ class _ManagerProfilePageState extends State<ManagerProfilePage> {
 
 
       // Corrected: Assuming boardingHouseID is a String
-      final String? boardingHouseId = managerData["boardingHouseID"] as String?;
+      final String? boardingHouseId = managerData["boardingHouseId"] as String?;
       print("Manager's boardingHouseId: $boardingHouseId"); // Crucial print
 
       if (boardingHouseId != null && boardingHouseId.isNotEmpty) {

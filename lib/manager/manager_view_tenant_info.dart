@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:rentahanan/entities/tenant.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/src/material/icons.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:rentahanan/entities/tenant.dart';
+import 'manager_helper.dart';
 
 
 class ManagerViewTenantInfoPage extends StatefulWidget {
@@ -138,61 +143,65 @@ class _ManagerViewTenantInfoPageState extends State<ManagerViewTenantInfoPage> {
                           ),
                           const SizedBox(height: 24),
 
-                          // View Payment History Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Navigate to payment history
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFEFEBE8),
-                                foregroundColor: const Color(0xFF3A2212),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                          // View Info and Add Dues Buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  height: 48,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // TODO: Navigate to payment history
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFEFEBE8),
+                                      foregroundColor: const Color(0xFF3A2212),
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'View Info',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Urbanist',
+                                        color: Color(0xFF3A2212),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                              child: const Text(
-                                'View Payment History',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Urbanist',
-                                  color: Color(0xFF3A2212),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: SizedBox(
+                                  height: 48,
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // TODO: Navigate to view dues
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFFEFEBE8),
+                                      foregroundColor: const Color(0xFF3A2212),
+                                      elevation: 0,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: const Text(
+                                      'Add Dues',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        fontFamily: 'Urbanist',
+                                        color: Color(0xFF3A2212),
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(height: 12),
-
-                          // View Dues Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 48,
-                            child: ElevatedButton(
-                              onPressed: () {
-                                // TODO: Navigate to view dues
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFFEFEBE8),
-                                foregroundColor: const Color(0xFF3A2212),
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                'View Dues',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  fontFamily: 'Urbanist',
-                                  color: Color(0xFF3A2212),
-                                ),
-                              ),
-                            ),
+                            ],
                           ),
                           const SizedBox(height: 30),
                         ],

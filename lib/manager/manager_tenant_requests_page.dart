@@ -123,8 +123,26 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                 unselectedLabelColor: Colors.grey,
                 indicatorColor: Color(0xFF3B2418),
                 tabs: [
-                  Tab(text: "Pending"),
-                  Tab(text: "Denied"),
+                  Tab(
+                    child: Text(
+                      "Pending",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Tab(
+                    child: Text(
+                      "Denied",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Urbanist',
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
               ),
               
@@ -135,35 +153,96 @@ class _ManagerTenantRequestsPageState extends State<ManagerTenantRequestsPage> {
                     // PENDING TAB
                     SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: pendingTenants.length,
-                            itemBuilder: (context, index) {
-                              var tenant = pendingTenants[index];
-                              return _buildRequestCard(tenant, false);
-                            },
-                          )
-                        ],
-                      ),
+                      child: pendingTenants.isEmpty
+                          ? SizedBox(
+                              height: 300,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(Icons.inbox_outlined, size: 56, color: Color(0xFFBDBDBD)),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'No pending requests',
+                                      style: TextStyle(
+                                        fontSize: 16, 
+                                        fontFamily: 'Urbanist',
+                                        fontWeight: FontWeight.w600, 
+                                        color: Color(0xFF3B2418)),
+                                    ),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      "You don't have any tenant requests right now.",
+                                      style: TextStyle(
+                                          fontFamily: 'Urbanist',
+                                          fontSize: 14,
+                                          color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: pendingTenants.length,
+                                  itemBuilder: (context, index) {
+                                    var tenant = pendingTenants[index];
+                                    return _buildRequestCard(tenant, false);
+                                  },
+                                )
+                              ],
+                            ),
                     ),
 
                     // DENIED TAB
                     SingleChildScrollView(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                      child: Column(
-                        children: [
-                          ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: rejectedTenants.length,
-                            itemBuilder: (context, index) {
-                              var tenant = rejectedTenants[index];
-                              return _buildRequestCard(tenant, true);
-                            },
-                          )
-                        ],
-                      ),
+                      child: rejectedTenants.isEmpty
+                          ? SizedBox(
+                              height: 300,
+                              child: Center(
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: const [
+                                    Icon(Icons.hourglass_empty, size: 56, color: Color(0xFFBDBDBD)),
+                                    SizedBox(height: 12),
+                                    Text(
+                                      'No denied requests',
+                                      style: TextStyle(
+                                          fontFamily: 'Urbanist',
+                                          fontWeight: FontWeight.w600,
+                                          color: Color(0xFF3B2418),
+                                          fontSize: 16,
+                                      ),
+                                    ),
+                                    SizedBox(height: 6),
+                                    Text(
+                                      "There are no requests you've rejected.",
+                                      style: TextStyle(
+                                        fontFamily: 'Urbanist',
+                                        fontSize: 14,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            )
+                          : Column(
+                              children: [
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  itemCount: rejectedTenants.length,
+                                  itemBuilder: (context, index) {
+                                    var tenant = rejectedTenants[index];
+                                    return _buildRequestCard(tenant, true);
+                                  },
+                                )
+                              ],
+                            ),
                     ),
                   ],
                 ),

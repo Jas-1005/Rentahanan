@@ -249,7 +249,7 @@ class _ManagerSignupPageState extends State<ManagerSignupPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
-                        'SIGN-UP',
+                        'Create Account',
                         style: TextStyle(
                           fontSize: 36,
                           fontFamily: 'Urbanist',

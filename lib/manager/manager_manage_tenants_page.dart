@@ -13,6 +13,7 @@ class ManagerManageTenantsPage extends StatefulWidget {
 
 class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
   List<Tenant> approvedTenants = [];
+  //late List<Tenant> approvedTenants;
 
   Future <void> fetchTenants() async { //firebase fetch info from manager info
     var selfDoc = await FirebaseFirestore.instance
@@ -110,7 +111,7 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                     child: Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
-                        color: Color(0xFF9B6A44)
+                        color: Color(0xFF3A2212)
                       ),
                       child: SizedBox(
                         height: 55,
@@ -311,11 +312,12 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                           arguments: tenant,
                         ),
                         style: ElevatedButton.styleFrom(
+                          minimumSize: const Size(double.infinity, 34),
                           backgroundColor: const Color(0xFFEFEBE8),
                           foregroundColor: Colors.white,
                           elevation: 6,
                           shadowColor: Colors.black54,
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -331,7 +333,7 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 15),
                     Flexible(
                       child: ElevatedButton(
                         onPressed: () => Navigator.pushNamed(
@@ -340,11 +342,12 @@ class _ManagerManageTenantsPageState extends State<ManagerManageTenantsPage> {
                           arguments: tenant,
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF3A2212),
+                          minimumSize: const Size(double.infinity, 34),
+                          backgroundColor: const Color(0xFF9B6A44),
                           foregroundColor: Colors.white,
-                          elevation: 6,
+                          elevation: 10,
                           shadowColor: Colors.black54,
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

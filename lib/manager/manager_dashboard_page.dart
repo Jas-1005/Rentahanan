@@ -138,12 +138,13 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
             width: double.infinity,
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
-              color: Color(0xFF3A2212),
+              color: Color(0xFF9B6A44),
               borderRadius: BorderRadius.all(Radius.circular(20)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                /*
                 const Text(
                   "Dashboard Overview:",
                   style: TextStyle(
@@ -153,7 +154,9 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                     fontFamily: 'Urbanist',
                   ),
                 ),
-                const SizedBox(height: 22),
+
+                 */
+                //const SizedBox(height: 15),
 
                 // Row 1
                 Row(
@@ -270,6 +273,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                               child: const Text(
                                 "View",
                                 style: TextStyle(
+                                  //color: Color(0xFF9B6A44),
                                   fontFamily: 'Urbanist',
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
@@ -358,7 +362,15 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Image.asset('assets/images/LOGO.png', height: 30),
+                      Image.asset(
+                        'assets/images/LOGO.png',
+                        height: 30,
+                        errorBuilder: (context, error, stack) {
+                          debugPrint('LOGO load error: $error');
+                          return const Icon(Icons.broken_image, size: 30, color: Colors.red);
+                        },
+                      ),
+                      /*
                       const SizedBox(width: 80),
                       Text(
                         "Hello, manager!",
@@ -369,6 +381,8 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                           color: Color(0xFF4E2F1A),
                         ),
                       ),
+
+                       */
                     ],
                   ),
 
@@ -381,6 +395,16 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
               ),
 
                   const SizedBox(height: 24),
+                  Text(
+                    "Hello, manager!",
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontFamily: 'Urbanist',
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF4E2F1A),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
                   dashboardOverviewCard(context),
 
               const SizedBox(height: 24),
@@ -389,7 +413,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.43,
                         child: DashboardButton(
-                          image: 'assets/images/manageTenants.png',
+                          image: 'assets/images/tenants.png',
                           title: "Manage\nTenants",
                           //subtitle: "Add, edit, and delete tenants here.",
                           onTap: () {
@@ -401,7 +425,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.43,
                         child: DashboardButton(
-                          image: 'assets/images/approvePayments.png',
+                          image: 'assets/images/approve.png',
                           title: "Approve\nPayments",
                           //subtitle: "Approve cash payments here.",
                           onTap: () {
@@ -417,8 +441,8 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.43,
                         child: DashboardButton(
-                          image: 'assets/images/inputDues.png',
-                          title: "View Reports",
+                          image: 'assets/images/dues.png',
+                          title: "Input Dues",
                           //subtitle: "Add tenants rent dues here.",
                           onTap: () {
                             Navigator.pushNamed(
@@ -434,11 +458,11 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.43,
                         child: DashboardButton(
-                          image: 'assets/images/payments.png',
+                          image: 'assets/images/transactions.png',
                           title: "Transactions",
                           //subtitle: "Check all approved transactions here.",
                           onTap: () {
-                            Navigator.pushNamed(context, '/manager-transactions');
+                            Navigator.pushNamed(context, '/placeholder-page');
                           },
                         ),
                       ),
@@ -493,7 +517,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                       alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () =>
-                            Navigator.pushNamed(context, '/announcement'),
+                            Navigator.pushNamed(context, '/placeholder-page'),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: const [
@@ -503,11 +527,11 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                                 fontSize: 16,
                                 fontFamily: 'Urbanist',
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF3B2418),
+                                color: Color(0xFF9B6A44),
                               ),
                             ),
                             SizedBox(width: 4),
-                            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF3B2418)),
+                            Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Color(0xFF9B6A44)),
                           ],
                         ),
                       ),
@@ -603,7 +627,10 @@ class DashboardButton extends StatelessWidget {
               height: 28,
               width: 28,
               fit: BoxFit.contain,
-              color: Colors.black87,
+              errorBuilder: (context, error, stack) {
+                debugPrint('Dashboard button image load error: $image -> $error');
+                return const Icon(Icons.broken_image, size: 28, color: Colors.red);
+              },
             ),
             const SizedBox(width: 15),
             Expanded(

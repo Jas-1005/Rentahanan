@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class ManagerHelper {
   static final List<Map<String, dynamic>> navItems = [
     {'image': 'assets/images/home.png', 'label': 'Home', 'route': '/manager-dashboard'},
-    {'image': 'assets/images/message.png', 'label': 'Inbox', 'route': '/manager-inbox'},
-    {'image': 'assets/images/aboutPage.png', 'label': 'About', 'route': '/manager-transactions'},
+    {'image': 'assets/images/message.png', 'label': 'Inbox', 'route': '/placeholder-page'},
+    {'image': 'assets/images/aboutPage.png', 'label': 'About', 'route': '/placeholder-page'},
     {'image': 'assets/images/profile.png', 'label': 'Profile', 'route': '/manager-profile'},
   ];
 

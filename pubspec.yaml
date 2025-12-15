@@ -67,17 +67,23 @@ flutter:
   assets:
     - assets/images/cute_cat_placeholder.jpg
     - assets/images/LOGO.png
-    - assets/images/approvePayments.png
-    - assets/images/manageTenants.png
-    - assets/images/inputDues.png
+    - assets/images/approve.png
+    - assets/images/tenants.png
+    - assets/images/dues.png
     - assets/images/aboutPage.png
     - assets/images/reportsPage.png
     - assets/images/home.png
     - assets/images/profile.png
-    - assets/images/payments.png
+    - assets/images/transactions.png
     - assets/images/message.png
     - assets/images/user1.png
     - assets/images/user2.png
+    - assets/images/mail.png
+    - assets/images/contact.png
+    - assets/images/help.png
+    - assets/images/changePassword.png
+    - assets/images/editProfile.png
+
   fonts:
     - family: Perandory
       fonts:

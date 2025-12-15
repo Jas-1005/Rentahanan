@@ -152,53 +152,331 @@ class _ManagerProfilePageState extends State<ManagerProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFBF7F0),
       body: SafeArea(
-          child: Column(
-            children: [
-              Text("Manager Profile"),
-              Container(
-                width: double.infinity,
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black),
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header (back + centered title)
+                  Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        icon: const Icon(Icons.arrow_back, color: Color(0xFF3B2418)),
+                      ),
+                      const Expanded(
+                        child: Center(
+                          child: Text(
+                            'Profile',
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, fontFamily: 'Urbanist', color: Color(0xFF3B2418)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 48),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Avatar + name
+                  Row(
+                    children: [
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: const Color(0xFFEFE9E4),
+                          image: null,
+                        ),
+                        child: CircleAvatar(
+                          radius: 32,
+                          backgroundColor: Colors.transparent,
+                          child: Text(
+                            managerName.isNotEmpty ? managerName.split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join() : 'M',
+                            style: const TextStyle(fontFamily: 'Urbanist', fontSize: 20, fontWeight: FontWeight.w700, color: Color(0xFF3B2418)),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              managerName.isNotEmpty ? managerName.toUpperCase() : 'MANAGER',
+                              style: const TextStyle(fontSize: 18, fontFamily:'Urbanist', fontWeight: FontWeight.w800, color: Color(0xFF3B2418)),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Manager',
+                              style: TextStyle(fontSize: 12, fontFamily:'Urbanist', color: Colors.black.withOpacity(0.55)),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              boardingHouseName.isNotEmpty ? boardingHouseName : '',
+                              style: TextStyle(fontSize: 12, fontFamily: 'Urbanist', color: Colors.black.withOpacity(0.55)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Boarding house share card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(18),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF9B6A44),
+                      borderRadius: BorderRadius.circular(14),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 10, offset: const Offset(0, 6)),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.home_outlined, color: Colors.white),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                boardingHouseName.isNotEmpty ? boardingHouseName : 'Your Boarding House',
+                                style: const TextStyle(color: Colors.white, fontSize: 18, fontFamily: 'Urbanist', fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        boardingHouseCode.isNotEmpty ? boardingHouseCode : '—',
+                                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, fontFamily:'Urbanist', color: Color(0xFF3B2418)),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: const EdgeInsets.only(left: 8),
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                      decoration: BoxDecoration(
+                                        color: const Color(0xFF9B6A44),
+                                        borderRadius: BorderRadius.circular(999),
+                                      ),
+                                      child: GestureDetector(
+                                        onTap: () => Clipboard.setData(ClipboardData(text: boardingHouseCode)),
+                                        child: const Text('SHARE CODE', style: TextStyle(color: Colors.white, fontSize: 12, fontFamily: 'Urbanist', fontWeight: FontWeight.w700)),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Use this code when registering your tenants.',
+                          style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 12, fontFamily: 'Urbanist'),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Contact info card (email, phone)
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10, offset: const Offset(0, 6))
+                    ],
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              //decoration: BoxDecoration(color: const Color(0xFFF4ECE7), borderRadius: BorderRadius.circular(10)),
+                              child: Image.asset('assets/images/mail.png', width: 20, height: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text('Email:  $email', style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Urbanist')),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              //decoration: BoxDecoration(color: const Color(0xFFF4ECE7), borderRadius: BorderRadius.circular(10)),
+                              child: Image.asset('assets/images/contact.png', width: 20, height: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text('Phone:  $contactNumber', style: const TextStyle(fontWeight: FontWeight.w600, fontFamily: 'Urbanist')),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Menu list
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12)),
+                    child: Column(
+                      children: [
+                        _menuItem(
+                            iconWidget: Image.asset(
+                              'assets/images/editProfile.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            title: 'Edit Profile',
+                            onTap: () {}),
+                        _menuItem(
+                            iconWidget: Image.asset(
+                              'assets/images/changePassword.png',
+                              width: 24,
+                              height: 24,
+                            ),
+                            title: 'Change Password',
+                            onTap: () {}),
+                        //_menuItem(icon: Icons.settings_outlined, title: 'Account Details', onTap: () {}),
+                        _menuItem(
+                            iconWidget: Image.asset(
+                              'assets/images/help.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                            title: 'Help & Support',
+                            onTap: () {}),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 18),
+
+                  // Large Logout button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        await logoutUser();
+                        if (!mounted) return;
+                        Navigator.pushReplacementNamed(context, '/');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFC46855),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      child: const Text('LOGOUT', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, fontFamily: 'Urbanist', color: Color(0xFFFFFFFF))),
+                    ),
+                  ),
+
+                  const SizedBox(height: 140),
+                ],
+              ),
+            ),
+
+            // bottom nav (kept for parity)
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: SafeArea(
+                bottom: true,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: 370,
+                    height: 80,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.20),
+                          blurRadius: 20,
+                          offset: const Offset(0, 6),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: ManagerHelper.buildNavItems(context),
+                    ),
+                  ),
                 ),
-                child: Column(
-                  children: [
-                    Text("Manager Name: $managerName"),
-                    Text("Boarding House Name: $boardingHouseName"),
-                    Text("Email Address: $email"),
-                    Text("Contact Number: $contactNumber"),
-                    Text("Boarding House Code: $boardingHouseCode"),
-                    ElevatedButton(
-                        onPressed: () => Clipboard.setData(ClipboardData(text: boardingHouseCode)), 
-                        child: Text("Copy to clipboard"),
-                    )
-                  ],
-                ),
               ),
-              ElevatedButton(
-                  onPressed: () {},
-                  child: Text("Change password"),
-              ),
-              ElevatedButton(
-                onPressed: () {},
-                child: Text("Edit user information"),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await logoutUser();
-                  if (!mounted) return;
-                  Navigator.pushReplacementNamed(context, '/');
-                },
-                child: Text('Logout')
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: ManagerHelper.buildNavItems(context),
-              ),
-            ],
-          )
-      )
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _infoField({required String label, required String value}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: TextStyle(fontSize: 12, fontFamily: 'Urbanist', color: Colors.black.withOpacity(0.6))),
+        const SizedBox(height: 6),
+        Text(value.isNotEmpty ? value : 'N/A', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, fontFamily: 'Urbanist')),
+      ],
+    );
+  }
+
+  Widget _menuItem({required Widget iconWidget, required String title, VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Color(0xFFF2F2F2))),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              //decoration: BoxDecoration(color: const Color(0xFFF4ECE7), borderRadius: BorderRadius.circular(10)),
+              child: iconWidget,
+            ),
+            const SizedBox(width: 12),
+            Expanded(child: Text(title, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, fontFamily: 'Urbanist'))),
+            const Icon(Icons.chevron_right, color: Color(0xFFBDBDBD)),
+          ],
+        ),
+      ),
     );
   }
 }

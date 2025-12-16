@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/material/icons.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:rentahanan/entities/payment.dart';
 
 
@@ -13,6 +16,7 @@ class TenantPayNowPage extends StatefulWidget {
 
 class _TenantPayNowPageState extends State<TenantPayNowPage> {
   List<Payment> paymentHistory = [];
+  final dateFormatter = DateFormat('MMMM dd, yyyy');
 
   static final List<Map<String, dynamic>> menuItems = [
     {'icon': Icons.account_balance_wallet, 'label': 'Pay with Gcash'},
@@ -21,7 +25,37 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
     {'icon': Icons.public, 'label': 'OTC'},
   ];
 
-  Future<void> fetchTenantPayments() async {}
+  Future<void> fetchTenantPayments() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user!.uid;
+
+    var paymentCollection = await FirebaseFirestore.instance.collection('payments')
+        .where('payerId', isEqualTo: userId)
+        .get();
+
+    List<Payment> paymentList = [];
+    for (var paymentDoc in paymentCollection.docs){
+      var payment = Payment(
+          id: paymentDoc.id,
+          date: (paymentDoc['datePaid'] as Timestamp).toDate(),
+          type: paymentDoc['type'],
+          status: paymentDoc['status'],
+          amount: paymentDoc['amount'],
+          note: paymentDoc['remarks']);
+      paymentList.add(payment);
+    }
+
+    setState(() {
+      paymentHistory = paymentList;
+    });
+
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTenantPayments();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,12 +66,6 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text('Hello, Tenant!')
-              ],
-            ),
-            const SizedBox(height: 20),
             Container(
               decoration: BoxDecoration(
                 border: Border.all(color: Colors.black, width: 2),
@@ -127,9 +155,25 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
                           final payment = paymentHistory[index];
                           return Card(
                             child: ListTile(
-                              title: Text(payment.date as String),
+                              title: Text(dateFormatter.format(payment.date)),
                               subtitle: Text(payment.status),
-                              trailing: Text('₱${payment.amount}'),
+                              trailing: Text('₱${payment.amount.toStringAsFixed(2)}'),
+                              // Add a button to view remarks
+                              onTap: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                      title: const Text('Remarks'),
+                                      content: Text(payment.note ?? 'No remarks'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context),
+                                          child: const Text('Close'),
+                                        )
+                                      ],
+                                    ),
+                                );
+                              },
                             ),
                           );
                         },

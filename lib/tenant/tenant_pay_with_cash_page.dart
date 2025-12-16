@@ -1,10 +1,7 @@
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class TenantPayWithCashPage extends StatefulWidget {
@@ -15,39 +12,32 @@ class TenantPayWithCashPage extends StatefulWidget {
 }
 
 class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
-  File ? _selectedImage;
-  final DateFormat formatter = DateFormat('MMMM dd, yyyy');
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController paymentDateController = TextEditingController();
-  final TextEditingController paymentProofController = TextEditingController();
-  final TextEditingController paymentAmountController = TextEditingController();
-  final TextEditingController paymentNotesController = TextEditingController();
+  final DateFormat formatter = DateFormat('MMMM dd, yyyy');
 
-  String errorMessage = "";
+  String paymentRemarks = '';
+  String paymentStatus = 'pending';
+  String paymentType = 'cash';
+  double paymentAmount = 0.0;
+  // DateTime? paymentDateReported;
 
-  Future _pickProofOfPayment(ImageSource source) async {
-    final proofOfPayment = await ImagePicker().pickImage(source: source);
+  Future<void> handlePayment() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    if(proofOfPayment == null) return;
-    setState(() {
-      _selectedImage = File(proofOfPayment.path);
-      paymentProofController.text = proofOfPayment.name;
+    _formKey.currentState!.save();
+
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user!.uid;
+
+    await FirebaseFirestore.instance.collection('payments').add({
+      'payerId': userId,
+      'type': paymentType,
+      'amount': paymentAmount,
+      'status': paymentStatus,
+      // 'dateReported': paymentDate,
+      'remarks': paymentRemarks,
+      'datePaid': FieldValue.serverTimestamp(),
     });
-  }
-
-  Future _pickDateOfPayment() async {
-    DateTime? pickedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
-    );
-
-    if(pickedDate != null){
-      paymentDateController.text = formatter.format(pickedDate);
-    } else {
-      paymentDateController.text = "";
-    }
   }
 
   Future<bool?> _showConfirmationDialog() async {
@@ -55,16 +45,16 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Payment'),
-          content: Text('Are you sure you want to submit this payment?'),
+          title: const Text('Confirm Payment'),
+          content: const Text('Are you sure you want to submit this payment?'),
           actions: [
             ElevatedButton(
-              child: Text('Confirm'),
-              onPressed: () => Navigator.of(context).pop(true), // returns true
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Confirm'),
             ),
             TextButton(
-              child: Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(false), // returns false
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('Cancel'),
             ),
           ],
         );
@@ -78,17 +68,17 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           content: Column(
-            mainAxisSize: MainAxisSize.min, // keeps dialog compact
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text(
+              const Text(
                 'The landlady has been notified. Check your inbox for confirmation.',
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 20),
               Center(
                 child: ElevatedButton(
-                  child: Text('OK'),
                   onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('OK'),
                 ),
               ),
             ],
@@ -98,53 +88,19 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
     );
   }
 
-  Future<void> _showPickImageDialog() async {
-    showDialog(
-      context: context,
-      builder: (_) {
-        return AlertDialog(
-          title: Text("Select Image Source"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Gallery'),
-                onTap: () {
-                  _pickProofOfPayment(ImageSource.gallery);
-                  Navigator.of(context).pop();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
-                onTap: () {
-                  _pickProofOfPayment(ImageSource.camera);
-                  Navigator.of(context).pop();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Future <void> handlePayment() async{
-    final paymentDate = paymentDateController.text;
-    final paymentProof = paymentProofController.text;
-    final paymentAmount = paymentAmountController.text;
-    final paymentNotes = paymentNotesController.text;
-  }
-
-  @override
-  void dispose() {
-    paymentDateController.dispose();
-    paymentAmountController.dispose();
-    paymentProofController.dispose();
-    paymentNotesController.dispose();
-    super.dispose();
-  }
+  // Future<void> _pickDateOfPayment() async {
+  //   DateTime? pickedDate = await showDatePicker(
+  //     context: context,
+  //     initialDate: DateTime.now(),
+  //     firstDate: DateTime(2000),
+  //     lastDate: DateTime(2100),
+  //   );
+  //   // if (pickedDate != null) {
+  //   //   setState(() {
+  //   //     paymentDate = pickedDate;
+  //   //   });
+  //   // }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -155,104 +111,70 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            child: Column (
+            child: Column(
               children: [
-                TextFormField(
-                  controller: paymentDateController,
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Select Date of Payment',
-                      suffixIcon: Icon(Icons.calendar_month),
-                  ),
-                  onTap: () async{
-                    await _pickDateOfPayment();
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please select date of payment';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 20),
-                TextFormField(
-                  controller: paymentProofController,
-                  readOnly: true,
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Upload Photo as Proof of Payment',
-                    suffixIcon: Icon(Icons.upload),
-                  ),
-                  onTap: () {
-                    _showPickImageDialog();
-                  }
-                ),
-                const SizedBox(height: 20),
-                _selectedImage != null
-                    ? Row(
-                  children: [
-                    Image.file(
-                      _selectedImage!,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                    SizedBox(width: 10),
-                    Expanded(child: Text(paymentProofController.text)),
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () {
-                        setState(() {
-                          _selectedImage = null;
-                          paymentProofController.clear();
-                        });
-                      },
-                    ),
-                  ],
-                )
-                : Text("Please upload a proof of payment"),
-                const SizedBox(height: 20),
+                // // Payment Date
+                // TextFormField(
+                //   readOnly: true,
+                //   decoration: const InputDecoration(
+                //     border: OutlineInputBorder(),
+                //     labelText: 'Payment Date',
+                //     suffixIcon: Icon(Icons.calendar_month),
+                //   ),
+                //   onTap: _pickDateOfPayment,
+                //   validator: (_) {
+                //     if (paymentDate == null) return 'Please select a date';
+                //     return null;
+                //   },
+                //   controller: TextEditingController(
+                //     text: paymentDate == null ? '' : formatter.format(paymentDate!),
+                //   ),
+                // ),
+                // const SizedBox(height: 20),
+
+                // Payment Amount
                 TextFormField(
                   keyboardType: TextInputType.numberWithOptions(decimal: true),
                   inputFormatters: <TextInputFormatter>[
                     FilteringTextInputFormatter.allow(RegExp(r'^\d+(\.\d*)?')),
                   ],
-                  controller: paymentAmountController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Enter amount',
+                    labelText: 'Amount',
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter payment amount';
-                    }
+                    if (value == null || value.isEmpty) return 'Enter payment amount';
+                    if (double.tryParse(value) == null) return 'Invalid amount';
                     return null;
                   },
+                  onSaved: (value) => paymentAmount = double.parse(value!),
                 ),
                 const SizedBox(height: 20),
+
+                // Notes (optional)
                 TextFormField(
-                  controller: paymentNotesController,
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Notes (Optional)',
                   ),
+                  onSaved: (value) => paymentRemarks = value ?? '',
                 ),
                 const SizedBox(height: 20),
+
                 ElevatedButton(
-                    onPressed: () async {
-                      if(_formKey.currentState!.validate()){
-                        bool? confirmed = await _showConfirmationDialog();
-                        if (confirmed == true) {
-                          // await handlePayment();
-                          _showLandladyNotifiedDialog();
-                        }
-                      }
-                    },
-                    child: Text("Notify Landlady")
-                )
-              ]
-            )
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+
+                    bool? confirmed = await _showConfirmationDialog();
+                    if (confirmed == true) {
+                      await handlePayment();
+                      _showLandladyNotifiedDialog();
+                    }
+                  },
+                  child: const Text('Notify Landlady'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

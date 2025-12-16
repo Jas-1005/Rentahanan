@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 
 import 'package:rentahanan/auth/auth.dart';
 import 'package:rentahanan/manager/manager.dart';
+import 'package:rentahanan/manager/manager_manage_tenant_payments_page.dart';
 import 'package:rentahanan/tenant/tenant.dart';
 
 import 'package:rentahanan/placeholder_page.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         // '/tenant-login': (context) => const TenantLoginPage(),
         // '/tenant-signup': (context) => const TenantSignupPage(),
         // '/tenant-denied': (context) => const TenantDeniedPage(),
+        '/manager-manage-tenant-payments': (context) => const ManagerManageTenantPaymentsPage(),
         '/tenant-pay-now': (context) => const TenantPayNowPage(),
         '/tenant-pay-with-cash': (context) => const TenantPayWithCashPage(),
         '/tenant-awaiting': (context) => const TenantAwaitingPage(),

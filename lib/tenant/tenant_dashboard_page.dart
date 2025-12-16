@@ -13,11 +13,11 @@ class TenantDashboardPage extends StatefulWidget {
 class _TenantDashboardPageState extends State<TenantDashboardPage> {
   static final List<Map<String, dynamic>> menuItems = [
     {'icon': Icons.payment, 'label': 'Pay', 'route': '/tenant-pay-now'},
-    {'icon': Icons.calendar_month, 'label': 'Dues'},
-    {'icon': Icons.cloud_upload_outlined, 'label': 'Upload Proof'},
-    {'icon': Icons.error_outline, 'label': 'Report Issue'},
-    {'icon': Icons.house, 'label': 'About'},
-    {'icon': Icons.notifications, 'label': 'Announcement'},
+    {'icon': Icons.calendar_month, 'label': 'Dues', 'route': '/placeholder-page'},
+    {'icon': Icons.cloud_upload_outlined, 'label': 'Upload Proof', 'route': '/placeholder-page'},
+    {'icon': Icons.error_outline, 'label': 'Report Issue', 'route': '/placeholder-page'},
+    {'icon': Icons.house, 'label': 'About', 'route': '/placeholder-page'},
+    {'icon': Icons.notifications, 'label': 'Announcement', 'route': '/placeholder-page'},
   ];
 
   String tenantName = "";

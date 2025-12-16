@@ -41,7 +41,6 @@ class _TenantAwaitingPageState extends State<TenantAwaitingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Awaiting Manager Confirmation')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20),

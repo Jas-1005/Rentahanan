@@ -429,7 +429,7 @@ class _ManagerDashboardPageState extends State<ManagerDashboardPage> {
                           title: "Approve\nPayments",
                           //subtitle: "Approve cash payments here.",
                           onTap: () {
-                            Navigator.pushNamed(context, '/manager-approve-payments');
+                            Navigator.pushNamed(context, '/manager-manage-tenant-payments');
                           },
                         ),
                       ),

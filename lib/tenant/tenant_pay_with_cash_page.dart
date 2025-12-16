@@ -17,7 +17,7 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
 
   String paymentRemarks = '';
   String paymentStatus = 'pending';
-  String paymentType = 'cash';
+  String paymentType = 'Cash';
   double paymentAmount = 0.0;
   // DateTime? paymentDateReported;
 
@@ -169,6 +169,7 @@ class _TenantPayWithCashPageState extends State<TenantPayWithCashPage> {
                     if (confirmed == true) {
                       await handlePayment();
                       _showLandladyNotifiedDialog();
+                      _formKey.currentState!.reset();
                     }
                   },
                   child: const Text('Notify Landlady'),

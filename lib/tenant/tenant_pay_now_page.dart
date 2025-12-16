@@ -19,10 +19,10 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
   final dateFormatter = DateFormat('MMMM dd, yyyy');
 
   static final List<Map<String, dynamic>> menuItems = [
-    {'icon': Icons.account_balance_wallet, 'label': 'Pay with Gcash'},
+    {'icon': Icons.account_balance_wallet, 'label': 'Pay with Gcash', 'route': '/placeholder-page'},
     {'icon': Icons.attach_money, 'label': 'Cash', 'route': '/tenant-pay-with-cash'},
-    {'icon': Icons.account_balance, 'label': 'Pay Through Bank'},
-    {'icon': Icons.public, 'label': 'OTC'},
+    {'icon': Icons.account_balance, 'label': 'Pay Through Bank', 'route': '/placeholder-page'},
+    {'icon': Icons.public, 'label': 'OTC', 'route': '/placeholder-page'},
   ];
 
   Future<void> fetchTenantPayments() async {
@@ -156,7 +156,13 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
                           return Card(
                             child: ListTile(
                               title: Text(dateFormatter.format(payment.date)),
-                              subtitle: Text(payment.status),
+                              subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(payment.type),
+                                    Text(payment.status),
+                                  ]
+                              ),
                               trailing: Text('₱${payment.amount.toStringAsFixed(2)}'),
                               // Add a button to view remarks
                               onTap: () {
@@ -183,7 +189,6 @@ class _TenantPayNowPageState extends State<TenantPayNowPage> {
                 ),
               ),
             ),
-
           ],
         ),
       )

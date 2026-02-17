@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-import 'package:rentahanan/auth/auth.dart';
-import 'package:rentahanan/manager/manager.dart';
-import 'package:rentahanan/manager/manager_manage_tenant_payments_page.dart';
-import 'package:rentahanan/tenant/tenant.dart';
+import 'package:rentahanan/features/auth/auth.dart';
+import 'package:rentahanan/features/manager/manager.dart';
+import 'package:rentahanan/features/tenant/tenant.dart';
 
 import 'package:rentahanan/placeholder_page.dart';
 

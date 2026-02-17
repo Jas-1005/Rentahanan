@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:rentahanan/entities/due.dart';
-import 'package:rentahanan/entities/tenant.dart';
 
-import '../entities/accountability.dart';
+import 'package:rentahanan/data/models/due.dart';
+import 'package:rentahanan/data/models/tenant.dart';
+import 'package:rentahanan/data/models/accountability.dart';
 
 
 class ManagerInputTenantDuePage extends StatefulWidget {

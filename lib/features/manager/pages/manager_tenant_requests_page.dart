@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rentahanan/entities/tenant.dart';
+import 'package:rentahanan/data/models/tenant.dart';
 
 
 class ManagerTenantRequestsPage extends StatefulWidget {

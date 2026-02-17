@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:rentahanan/entities/tenant.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/src/material/icons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:rentahanan/entities/tenant.dart';
-import 'manager_helper.dart';
 
+import 'package:rentahanan/data/models/tenant.dart';
 
 class ManagerViewTenantInfoPage extends StatefulWidget {
   const ManagerViewTenantInfoPage({super.key});

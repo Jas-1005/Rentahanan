@@ -1,4 +1,4 @@
-import '../due.dart';
+import 'due.dart';
 
 class Accountability {
   String id;

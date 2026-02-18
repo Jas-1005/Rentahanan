@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'package:rentahanan/features/auth/auth.dart';
-import 'package:rentahanan/features/manager/manager.dart';
-import 'package:rentahanan/features/tenant/tenant.dart';
+// import 'package:rentahanan/features/manager/manager.dart';
+// import 'package:rentahanan/features/tenant/tenant.dart';
 
 import 'package:rentahanan/placeholder_page.dart';
 
@@ -23,29 +23,24 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Rentahanan',
       debugShowCheckedModeBanner: false,
-      initialRoute: '/',
+      initialRoute: '/signup',
       routes: {
-        '/': (context) => const LandingPage(),
-        '/placeholder-page': (context) => const PlaceholderPage(),
+        // '/': (context) => const LandingPage(),
+        // '/placeholder-page': (context) => const PlaceholderPage(),
         '/login': (context) => const LoginPage(),
         '/signup': (context) => const SignupPage(),
-        // '/manager-login': (context) => const ManagerLoginPage(),
-        // '/manager-signup': (context) => const ManagerSignupPage(),
-        // '/tenant-login': (context) => const TenantLoginPage(),
-        // '/tenant-signup': (context) => const TenantSignupPage(),
-        // '/tenant-denied': (context) => const TenantDeniedPage(),
-        '/manager-manage-tenant-payments': (context) => const ManagerManageTenantPaymentsPage(),
-        '/tenant-pay-now': (context) => const TenantPayNowPage(),
-        '/tenant-pay-with-cash': (context) => const TenantPayWithCashPage(),
-        '/tenant-awaiting': (context) => const TenantAwaitingPage(),
-        '/manager-dashboard': (context) => const ManagerDashboardPage(),
-        '/manager-manage-tenants': (context) => const ManagerManageTenantsPage(),
-        '/manager-view-tenant-info': (context) => const ManagerViewTenantInfoPage(),
-        '/manager-tenant-requests': (context) => const ManagerTenantRequestsPage(),
-        '/manager-input-tenant-due': (context) => const ManagerInputTenantDuePage(),
-        '/manager-profile': (context) => const ManagerProfilePage(),
-        '/tenant-dashboard': (context) => const TenantDashboardPage(),
-        '/tenant-profile': (context) => const TenantProfilePage(),
+        // '/manager-manage-tenant-payments': (context) => const ManagerManageTenantPaymentsPage(),
+        // '/tenant-pay-now': (context) => const TenantPayNowPage(),
+        // '/tenant-pay-with-cash': (context) => const TenantPayWithCashPage(),
+        // '/tenant-awaiting': (context) => const TenantAwaitingPage(),
+        // '/manager-dashboard': (context) => const ManagerDashboardPage(),
+        // '/manager-manage-tenants': (context) => const ManagerManageTenantsPage(),
+        // '/manager-view-tenant-info': (context) => const ManagerViewTenantInfoPage(),
+        // '/manager-tenant-requests': (context) => const ManagerTenantRequestsPage(),
+        // '/manager-input-tenant-due': (context) => const ManagerInputTenantDuePage(),
+        // '/manager-profile': (context) => const ManagerProfilePage(),
+        // '/tenant-dashboard': (context) => const TenantDashboardPage(),
+        // '/tenant-profile': (context) => const TenantProfilePage(),
       },
     );
   }
